@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 // import axios from 'axios';
 import { toast } from 'react-toastify';
-import { UserApi, signUpApi } from '../../api/UserApi';
+import { signUpApi } from '../../api/UserApi';
+// import { UserApi, signUpApi } from '../../api/UserApi';
 //import { useNavigate } from "react-router-dom";
 
 
@@ -19,7 +20,7 @@ const Register = () => {
     //     setShowPassword(!showPassword);
     // }
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         if (password !== confirmPassword) {
             toast.error("Confirm password must be the same as password", {
@@ -45,33 +46,9 @@ const Register = () => {
 
 
         try {
-            // // Gọi API đăng ký người dùng
-            // const response = await axios.post('https://localhost:7158/api/Auth/Register', {
-            //     username,
-            //     password
-            // });
-
-            // console.log(response.data);
-
-            // if (response.data.success) {
-            //     // Nếu đăng ký thành công, gửi email xác nhận
-            //     await axios.post('https://localhost:7158/api/Auth/ConfirmEmail', { username });
-            //     setMessage('Registration successful! Please check your email to confirm your account.');
-            // } else {
-            //     setError('Registration failed. Please try again.');
-            // }
-
-            const reponse = UserApi();
-
-            if (reponse?.data?.data?.some((item) => item.username === username)) {
-                toast.error("This username is already existed", {
-                    autoClose: 1500,
-                });
-                return;
-            }
-
-            signUpApi(username, password, confirmPassword)
+            signUpApi(username, password)
                 .then((response) => {
+
                     console.log("Sign Up Successfully", response);
                     setMessage('Registration successful! Please check your email to confirm your account.');
                     toast.success(`Sign Up Successfully`, { autoClose: 1500 });
@@ -84,7 +61,7 @@ const Register = () => {
                 })
                 .catch((error) => {
                     console.error("Sign Up Failed", error);
-                    setError('Registration failed. Please try again.');
+                    setError('Registration failed.');
                     toast.error("Sign Up Failed.", { autoClose: 1500 });
                 });
 
