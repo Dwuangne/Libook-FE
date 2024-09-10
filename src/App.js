@@ -1,28 +1,25 @@
 import React from 'react';
-import Login from './Login';
-import logo from './logo.svg';
+import SignUp from './components/general/SignUp'
+//import SignIn from './components/general/SignIn';
+//import logo from './logo.svg';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
       <div className="App">
-        <Login />
+        {/* <Route>
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
+        </Route> */}
+        <SignUp />
+
+        {/* <SignIn /> */}
       </div>
-      <header className="App-header">
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      </header> */}
     </div>
   );
 }
