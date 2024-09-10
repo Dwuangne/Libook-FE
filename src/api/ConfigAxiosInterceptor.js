@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosJWT = axios.create({
-    baseURL: 'https://localhost:7158/swagger/index.html',
+    baseURL: 'https://localhost:7158/api',
 });
 
 // Add a request interceptor
