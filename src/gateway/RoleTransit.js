@@ -10,11 +10,11 @@ export default function ProtectedRoute({ allowedRole }) {
         toast.warn("Please login to access this feature", { autoClose: 1500 });
         return <Navigate to="/signin" />;
     }
-    return allowedRole == role ? (
+    return allowedRole === role ? (
         <Outlet />
-    ) : role == "Admin" ? (
+    ) : role === "admin" ? (
         <Navigate to="/admin" />
-    ) : role == "customer" ? (
+    ) : role === "customer" ? (
         <Navigate to="/" />
     ) : (
         <Navigate to="/signin" />
