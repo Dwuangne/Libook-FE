@@ -4,7 +4,7 @@ import SignIn from "./components/general/SignIn";
 //import Footer from "./components/Footer/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-//import logo from './logo.svg';
+
 //import "./reset.css";
 import "./App.css";
 
