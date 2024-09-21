@@ -27,7 +27,7 @@ const Register = () => {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+event.preventDefault();
     console.log("form subbmited ", username, password, confirmPassword);
 
     if (confirmPassword !== password) {

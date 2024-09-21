@@ -17,8 +17,6 @@ const Login = () => {
   window.document.tiltle = "Sign In";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  //const [error, setError] = useState('');
-  //const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -49,7 +47,6 @@ const Login = () => {
         localStorage.setItem("username", username);
 
         console.log("Sign In Successfully", res);
-        //setMessage('Login successfully.');
         toast.success("Login successfully", { autoClose: 1500 });
 
         setTimeout(() => {
@@ -58,18 +55,22 @@ const Login = () => {
         setTimeout(() => {
           console.log("Decoded Access Token", decodedAccessToken);
           console.log("Login success", res);
-          // if (decodedAccessToken.roles[0] === "admin") {
-          //     navigate("/admin");
-          // } else if (decodedAccessToken.roles[0] === "customer") {
-          //     navigate("/");
-          // } else {
-          //     navigate("/signin");
-          // }
+          const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+          console.log("Role:", role);
+
+          if (role === "admin") {
+              navigate("/admin");
+          } else if (role === "Customer") {
+              navigate("/");
+          } else {
+              navigate("/signin");
+          }
+          
         }, 5000);
       })
       .catch((err) => {
-        console.error("Sign Up Failed", err);
-        const errorMessage = err.response?.data || "Sign Up Failed.";
+        console.error("Sign In Failed", err);
+        const errorMessage = err.response?.data || "Sign In Failed.";
         toast.error(errorMessage, { autoClose: 1500 });
         setLoading(false);
       });
