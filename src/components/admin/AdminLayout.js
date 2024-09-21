@@ -2,8 +2,12 @@ import React from "react";
 import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png"
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import Dashboard from "@mui/icons-material/Dashboard";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
+import BookIcon from '@mui/icons-material/AutoStories';
+import MessageIcon from '@mui/icons-material/Chat';
+import VoucherIcon from '@mui/icons-material/Discount';
+import ReportIcon from '@mui/icons-material/Assessment';
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,19 +20,38 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
-const drawerWidth = 260;
+const drawerWidth = 240;
 const itemList = [
   {
     label: "Dashboard",
-    Icon: Dashboard,
+    Icon: DashboardIcon,
     href: "dashboard",
   },
- 
+  {
+    label: "Book",
+    Icon: BookIcon,
+    href: "books",
+  },
+  {
+    label: "Voucher",
+    Icon: VoucherIcon,
+    href: "vouchers",
+  },
+  {
+    label: "Message",
+    Icon: MessageIcon,
+    href: "messages",
+  },
+  {
+    label: "Report",
+    Icon: ReportIcon,
+    href: "reports",
+  },
+
 ];
 
 export default function AdminLayout() {
   const { pathname } = useLocation();
-  const username = localStorage.getItem("username");
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -55,11 +78,13 @@ export default function AdminLayout() {
       <Drawer
         sx={{
           width: drawerWidth,
-
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            borderRadius: "5px",
+            backgroundColor: "#F8F8FF", // Set background color
+            backgroundSize: "cover", // Cover the entire drawer
           },
         }}
         variant="permanent"
@@ -69,21 +94,18 @@ export default function AdminLayout() {
           sx={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "left",
-            justifyContent: "center",
-            backgroundColor: "white",
+            alignItems: "center",
+            justifyContent: "top",
             color: "white",
-            minHeight: "120px",
+            height: "70px",
           }}
         >
           <img
             src={Logo_RemoveBG}
             style={{
-              width: "90px",
+              width: "150px",
               height: "90px",
-              my: 1,
               pt: 1,
-              borderRadius: "10px",
             }}
             alt="logo"
           />
@@ -100,17 +122,17 @@ export default function AdminLayout() {
                   borderRadius: "10px",
                   border: "1px solid white",
                   "&:hover": {
-                    backgroundColor: "#354DF0",
-                    color: "#ff469e",
-                    border: "1px solid #FBFBFD",
+                    backgroundColor: "#c7d5ff",
+                    color: "#030ce9",
+                    border: "2px solid #030ce9",
                   },
                   "&.Mui-selected": {
-                    backgroundColor: "#ff469e",
+                    backgroundColor: "#030ce9",
                     color: "white",
                   },
                   "&.Mui-selected:hover": {
-                    backgroundColor: "#fff4fc",
-                    color: "#354DF0",
+                    backgroundColor: "#030ce9",
+                    color: "white",
                   },
                 }}
               >
@@ -126,7 +148,7 @@ export default function AdminLayout() {
             </ListItem>
           ))}
         </List>
-        <Divider color="black" sx={{ mt: 2 }} />
+        <Divider color="#CDCDCE" sx={{ mt: 2 }} />
         <List>
           <ListItem sx={{ px: 2, py: 0.4 }}>
             <ListItemButton
@@ -135,17 +157,17 @@ export default function AdminLayout() {
                 borderRadius: "10px",
                 border: "1px solid white",
                 "&:hover": {
-                  backgroundColor: "#fff4fc",
-                  color: "#ff469e",
-                  border: "1px solid #ff469e",
+                  backgroundColor: "#c7d5ff",
+                  color: "#030ce9",
+                  border: "2px solid #030ce9",
                 },
                 "&.Mui-selected": {
-                  backgroundColor: "#ff469e",
+                  backgroundColor: "#030ce9",
                   color: "white",
                 },
                 "&.Mui-selected:hover": {
-                  backgroundColor: "#fff4fc",
-                  color: "#ff469e",
+                  backgroundColor: "#030ce9",
+                  color: "white",
                 },
               }}
             >
@@ -163,7 +185,7 @@ export default function AdminLayout() {
         component="main"
         sx={{
           flexGrow: 1,
-          backgroundColor: "#f5f7fd",
+          backgroundColor: "white",
           minHeight: "100vh",
           height: "100%",
           minWidth: 650,
