@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 
 //import "./reset.css";
 import "./App.css";
-
+// "commit ho t cai "
 //import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -20,8 +20,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
       </Routes>
 
-      {/* <Footer />
-      <ToastContainer /> */}
+     
       <ToastContainer />
     </div>
   );
