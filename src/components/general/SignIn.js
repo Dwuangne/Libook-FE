@@ -58,7 +58,7 @@ const Login = () => {
           const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
           console.log("Role:", role);
 
-          if (role === "admin") {
+          if (role === "Admin") {
               navigate("/admin");
           } else if (role === "Customer") {
               navigate("/");
