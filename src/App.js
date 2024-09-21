@@ -5,17 +5,18 @@ import ProtectedRoute from "./gateway/RoleTransit";
 //import Footer from "./components/Footer/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+//import HomePage from "./components/general/homePage";
+
 
 //import "./reset.css";
 import "./App.css";
-// "commit ho t cai "
-//import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
       <Routes>
+        {/* <Route path="/" element={<HomePage />} /> */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
 
