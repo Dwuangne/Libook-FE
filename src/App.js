@@ -5,13 +5,14 @@ import ProtectedRoute from "./gateway/RoleTransit";
 //import Footer from "./components/Footer/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminHome from "./components/admin/AdminHome";
 //import HomePage from "./components/general/homePage";
 
 
 //import "./reset.css";
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
-
 function App() {
   return (
     <div className="App">
@@ -21,15 +22,15 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
 
 
-        <Route element={<ProtectedRoute allowedRole="customer" />}>
+        <Route element={<ProtectedRoute allowedRole="Customer" />}>
 
         </Route>
 
-        <Route element={<ProtectedRoute allowedRole="admin" />}>
-          {/* <Route path="/admin" element={<SignUp />}>
+        <Route element={<ProtectedRoute allowedRole="Admin" />}>
+          <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to={"/admin/dashboard"} />} />
-          </Route>  */}
-
+            <Route path="dashboard" element={<AdminHome />} />
+          </Route> 
         </Route>
       </Routes>
 

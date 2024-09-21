@@ -39,24 +39,22 @@ const Login = () => {
     loginApi(username, password)
       .then((res) => {
         const accessToken = res?.data?.data;
-        console.log(accessToken);
         const decodedAccessToken = jwtDecode(accessToken.jwtToken);
-        console.log(decodedAccessToken);
-        const username = decodedAccessToken?.username;
-        localStorage.setItem("accessToken", accessToken);
+        const username =decodedAccessToken ? decodedAccessToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] : null;
+        
+        localStorage.setItem("accessToken", accessToken.jwtToken);
         localStorage.setItem("username", username);
 
-        console.log("Sign In Successfully", res);
         toast.success("Login successfully", { autoClose: 1500 });
 
         setTimeout(() => {
           setLoading(true);
         }, 2000);
+
         setTimeout(() => {
           console.log("Decoded Access Token", decodedAccessToken);
           console.log("Login success", res);
           const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-          console.log("Role:", role);
 
           if (role === "Admin") {
               navigate("/admin");
