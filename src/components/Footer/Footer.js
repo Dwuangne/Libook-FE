@@ -1,14 +1,15 @@
 import React from "react";
 import {
-  Button,
   Container,
   Divider,
-  FormControl,
-  Input,
   Typography,
+  Input,
+  Button,
+  IconButton,
 } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import EmailIcon from "@mui/icons-material/Email";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import { Link, useLocation } from "react-router-dom";
 
 const Footer = () => {
@@ -23,51 +24,62 @@ const Footer = () => {
   return (
     <div
       style={{
-        backgroundColor: "#fff4fc",
-        // color: "#ff469e",
-        color: "#ff469e",
+        backgroundColor: "#B2C4F8",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         margin: 0,
         boxShadow: "1px 1px 3px rgba(0,0,0.16)",
-        padding: "2rem 0",
-        paddingBottom: "1rem",
+        padding: "1rem 0",
+        paddingBottom: "0.5rem",
       }}
     >
-      <Container style={{ width: "100%", textAlign: "center" }}>
+      <Container maxWidth="lg">
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: "1rem",
-            paddingBottom: "0.25rem",
           }}
         >
+          {/* Libook Section */}
           <div
             style={{
               display: "flex",
+              flex: 1,
               flexDirection: "column",
               textAlign: "left",
-              gap: "0.5rem",
-              padding: "1rem",
-              borderRadius: "20px",
-              border: "1px solid #ff469e",
-              backgroundColor: "#ffe4ec",
+              gap: "0.3rem",
+              boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
             }}
           >
-            <Typography variant="h5" sx={{ mb: 0.25, fontWeight: "bold" }}>
-              ABOUT US
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              LiBook
             </Typography>
-            <Divider
-              sx={{
-                borderColor: "#ff469e",
-                borderWidth: "1px",
-                width: "35%",
-                my: 0.5,
-              }}
-            />
+            <Typography variant="body2" sx={{ marginTop: "1rem" }}>
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorum
+              atque vero in. Dolores similique ducimus error aperiam. Nam,
+              debitis at!
+            </Typography>
+          </div>
+
+          {/* Quick Links Section */}
+
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              flexDirection: "column",
+              textAlign: "left",
+              gap: "0.3rem",
+              boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 0.25, fontWeight: "bold" }}>
+              Quick Links
+            </Typography>
+
             <Link
               to="/introduction"
               style={{ textDecoration: "none" }}
@@ -80,30 +92,14 @@ const Footer = () => {
                   cursor: "pointer",
                   fontWeight: "500",
                   transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
-                  fontSize: "1.15rem",
+                  fontSize: "1rem",
                   "&:hover": {
                     scale: "1.02",
-                    color: "#ff469e",
-                  },
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "28.5%",
-                    height: 2,
-                    backgroundColor: "#ff469e",
-                    transform: "scaleX(0)",
-                    transformOrigin: "bottom right",
-                    transition: "transform 0.3s ease-in-out",
-                  },
-                  "&:hover::before": {
-                    transform: "scaleX(1)",
-                    transformOrigin: "bottom left",
+                    color: "#003ce9",
                   },
                 }}
               >
-                Introduction
+                Home
               </Typography>
             </Link>
             <Link
@@ -118,30 +114,14 @@ const Footer = () => {
                   cursor: "pointer",
                   fontWeight: "500",
                   transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
-                  fontSize: "1.15rem",
+                  fontSize: "1rem",
                   "&:hover": {
                     scale: "1.02",
-                    color: "#ff469e",
-                  },
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "25%",
-                    height: 2,
-                    backgroundColor: "#ff469e",
-                    transform: "scaleX(0)",
-                    transformOrigin: "bottom right",
-                    transition: "transform 0.3s ease-in-out",
-                  },
-                  "&:hover::before": {
-                    transform: "scaleX(1)",
-                    transformOrigin: "bottom left",
+                    color: "#003ce9",
                   },
                 }}
               >
-                Promotion
+                About
               </Typography>
             </Link>
             <Link
@@ -156,185 +136,175 @@ const Footer = () => {
                   cursor: "pointer",
                   fontWeight: "500",
                   transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
-                  fontSize: "1.15rem",
+                  fontSize: "1rem",
                   "&:hover": {
                     scale: "1.02",
-                    color: "#ff469e",
-                  },
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "37.5%",
-                    height: 2,
-                    backgroundColor: "#ff469e",
-                    transform: "scaleX(0)",
-                    transformOrigin: "bottom right",
-                    transition: "transform 0.3s ease-in-out",
-                  },
-                  "&:hover::before": {
-                    transform: "scaleX(1)",
-                    transformOrigin: "bottom left",
+                    color: "#003ce9",
                   },
                 }}
               >
-                Warranty Policy
+                Categories
               </Typography>
             </Link>
           </div>
 
+          {/* Support Section */}
           <div
             style={{
               display: "flex",
+              flex: 1,
               flexDirection: "column",
               textAlign: "left",
-              gap: "0.5rem",
-              padding: "1rem",
-              borderRadius: "20px",
-              border: "1px solid #ff469e",
-              backgroundColor: "#ffe4ec",
+              gap: "0.3rem",
+              boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
             }}
           >
-            <Typography variant="h5" sx={{ mb: 0.25, fontWeight: "bold" }}>
-              OUR OFFICE
+            <Typography
+              variant="h6"
+              sx={{ mb: 0.25, fontWeight: "bold", gap: "1rem" }}
+            >
+              Support
             </Typography>
-            <Divider
-              sx={{
-                borderColor: "#ff469e",
-                borderWidth: "1px",
-                width: "42%",
-                my: 0.5,
-              }}
-            />
+
             <Link
-              to="/"
-              style={{
-                textDecoration: "none",
-                color: "#ff469e",
-                display: "flex",
-              }}
+              to="/introduction"
+              style={{ textDecoration: "none" }}
               onClick={() => window.scrollTo(0, 0)}
             >
-              <LocationOnIcon style={{ marginRight: "0.5rem" }} />
               <Typography
                 sx={{
+                  textDecoration: "none",
                   color: "black",
+                  cursor: "pointer",
+                  fontWeight: "500",
+                  transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
+                  fontSize: "1rem",
                   "&:hover": {
-                    color: "#ff469e",
+                    scale: "1.02",
+                    color: "#003ce9",
                   },
                 }}
               >
-                123 ABC Street, XYZ City
+                Company
               </Typography>
             </Link>
             <Link
-              to="/"
-              style={{
-                textDecoration: "none",
-                color: "#ff469e",
-                display: "flex",
-                marginTop: "0.5rem",
-              }}
+              to="/promotion"
+              style={{ textDecoration: "none" }}
               onClick={() => window.scrollTo(0, 0)}
             >
-              <EmailIcon style={{ marginRight: "0.5rem" }} />
               <Typography
                 sx={{
+                  textDecoration: "none",
                   color: "black",
+                  cursor: "pointer",
+                  fontWeight: "500",
+                  transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
+                  fontSize: "1rem",
                   "&:hover": {
-                    color: "#ff469e",
+                    scale: "1.02",
+                    color: "#003ce9",
                   },
                 }}
               >
-                Libook@gmail.com
+                Blog
+              </Typography>
+            </Link>
+            <Link
+              to="/policy"
+              style={{ textDecoration: "none" }}
+              onClick={() => window.scrollTo(0, 0)}
+            >
+              <Typography
+                sx={{
+                  textDecoration: "none",
+                  color: "black",
+                  cursor: "pointer",
+                  fontWeight: "500",
+                  transition: "color 0.2s ease-in-out, scale 0.3s ease-in-out",
+                  fontSize: "1rem",
+                  "&:hover": {
+                    scale: "1.02",
+                    color: "#003ce9",
+                  },
+                }}
+              >
+                Contact Us
               </Typography>
             </Link>
           </div>
 
+          {/* Newsletter Section */}
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
+              flex: 1,
               textAlign: "left",
-              gap: "0.5rem",
-              padding: "1rem",
-              borderRadius: "20px",
-              border: "1px solid #ff469e",
-              backgroundColor: "#ffe4ec",
             }}
           >
-            <Typography variant="h5" sx={{ mb: 0.25, fontWeight: "bold" }}>
-              NEWSLETTER
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Newsletter
             </Typography>
-            <Divider
-              sx={{
-                borderColor: "#ff469e",
-                borderWidth: "1px",
-                width: "48%",
-                my: 0.5,
-              }}
-            />
-            <Typography sx={{ color: "black" }}>
+            <Typography sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
               Please leave your email to receive new information of new
               products, as well as offers from LiBook.
             </Typography>
             <div
               style={{
                 display: "flex",
-                flexDirection: "row",
                 alignItems: "center",
+                marginBottom: "1rem",
               }}
             >
-              <FormControl style={{ flex: 1, marginRight: "0.5rem" }}>
-                <Input
-                  placeholder="Enter your email here"
-                  disableUnderline
-                  style={{
-                    backgroundColor: "white",
-                    color: "#ff469e",
-                    border: "1px solid #59595e",
-                    padding: "5px",
-                    borderRadius: "10px",
-                  }}
-                />
-              </FormControl>
+              <Input
+                placeholder="Email"
+                disableUnderline
+                sx={{
+                  backgroundColor: "#F5F5F5",
+                  padding: "0.5rem",
+                  borderRadius: "4px",
+                  flex: 1,
+                  marginRight: "0.5rem",
+                }}
+              />
               <Button
                 variant="contained"
-                sx={{
-                  backgroundColor: "white",
-                  color: "#ff469e",
-                  borderRadius: "10px",
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  height: "100%",
-                  transition:
-                    "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
-                  border: "1px solid #ff469e",
-                  "&:hover": {
-                    backgroundColor: "#ff469e",
-                    color: "white",
-                    border: "1px solid white",
-                  },
-                }}
+                sx={{ backgroundColor: "gray", color: "white" }}
               >
-                Subscribe
+                →
               </Button>
             </div>
           </div>
         </div>
 
-        <Typography
-          variant="body2"
+        <Divider />
+
+        <div
           style={{
-            color: "gray",
-            marginTop: "2rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "0.5rem",
+            flexWrap: "wrap",
           }}
         >
-          Copyright © 2024 - Copyright of LiBook - SWP391 <br />
-          Since 1999 - Trademark registered number 822024 by the Intellectual
-          Property Office
-        </Typography>
+          <Typography variant="body2">
+            Privacy Policy &nbsp; | &nbsp; Support
+          </Typography>
+          <Typography variant="body2">
+            © 2024 - LiBook. All rights reserved
+          </Typography>
+          <div>
+            <IconButton color="inherit" aria-label="Twitter">
+              <TwitterIcon />
+            </IconButton>
+            <IconButton color="inherit" aria-label="Instagram">
+              <InstagramIcon />
+            </IconButton>
+            <IconButton color="inherit" aria-label="Facebook">
+              <FacebookIcon />
+            </IconButton>
+          </div>
+        </div>
       </Container>
     </div>
   );
