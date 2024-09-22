@@ -2,6 +2,11 @@
   text-align: center;
 }
 
+.logo {
+  width: 150px; /* Adjust the size as needed */
+  height: auto; /* Maintains aspect ratio */
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -36,3 +41,24 @@
     transform: rotate(360deg);
   }
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Chiều cao tối thiểu là 100% viewport */
+}
+
+.main-content {
+  flex: 1; /* Chiếm toàn bộ không gian còn lại giữa header và footer */
+}
+
+footer {
+  /* Footer sẽ luôn nằm ở cuối */
+}
+
