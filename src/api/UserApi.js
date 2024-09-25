@@ -2,6 +2,7 @@ import axiosJWT from "./ConfigAxiosInterceptor";
 
 const URL_LOGIN = `https://localhost:7158/api/Auth/Login`;
 const URL_SIGNUP = `https://localhost:7158/api/Auth/Register`;
+const URL_LOGIN_GOOGLE = `https://localhost:7158/api/Auth/google-login`;
 
 
 // export const UserApi = (params) => {
@@ -25,6 +26,14 @@ export const signUpApi = (
         username: username,
         password: password,
         roles: ["customer"]
+    });
+};
+
+export const loginGoogleApi = (
+    token
+) => {
+    return axiosJWT.post(URL_LOGIN_GOOGLE, {
+        token: token
     });
 };
 

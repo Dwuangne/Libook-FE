@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png"
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,8 +18,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Typography } from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Typography,Menu, MenuItem} from "@mui/material";
 import { toast } from "react-toastify";
+const drawerWidthOpen = 240; // Chiều rộng khi menu mở
+const drawerWidthClosed = 0; // Chiều rộng khi menu đóng
 const drawerWidth = 240;
 const itemList = [
   {
@@ -47,12 +52,31 @@ const itemList = [
     Icon: ReportIcon,
     href: "reports",
   },
-
 ];
 
 export default function AdminLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true); // State để quản lý việc đóng mở menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfile = () => {
+    // Navigate to profile page or open profile modal
+    handleClose();
+  };
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -65,26 +89,38 @@ export default function AdminLayout() {
     }, 1000);
   };
 
+  const truncateUsername = (fullUsername) => {
+    const atIndex = fullUsername.indexOf('@');
+    return atIndex !== -1 ? fullUsername.slice(0, atIndex) : fullUsername;
+  };
+
+  // Assume we get the username from localStorage or a state management solution
+  const fullUsername = localStorage.getItem("username") || "User";
+  const displayUsername = truncateUsername(fullUsername);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
-          width: `calc(100% - ${drawerWidth}px)`,
-          ml: `${drawerWidth}px`,
+          width: `calc(100% - ${isDrawerOpen ? drawerWidthOpen : drawerWidthClosed}px)`,
+          ml: `${isDrawerOpen ? drawerWidthOpen : drawerWidthClosed}px`,
+          backgroundColor: "#3949AB", // Indigo
         }}
       />
       <Drawer
         sx={{
-          width: drawerWidth,
+          width: isDrawerOpen ? drawerWidthOpen : drawerWidthClosed,
           flexShrink: 0,
+          transition: 'width 0.3s', // Thêm transition để mượt mà
           "& .MuiDrawer-paper": {
-            width: drawerWidth,
+            width: isDrawerOpen ? drawerWidthOpen : drawerWidthClosed,
+            transition: 'width 0.3s', // Thêm transition cho phần Drawer
             boxSizing: "border-box",
             borderRadius: "5px",
-            backgroundColor: "#F8F8FF", // Set background color
-            backgroundSize: "cover", // Cover the entire drawer
+            backgroundColor: "#b2c4f8",
+            backgroundSize: "cover",
           },
         }}
         variant="permanent"
@@ -96,7 +132,7 @@ export default function AdminLayout() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "top",
-            color: "white",
+            color: "#3949AB", // Indigo
             height: "70px",
           }}
         >
@@ -105,33 +141,29 @@ export default function AdminLayout() {
             style={{
               width: "150px",
               height: "90px",
-              pt: 1,
             }}
             alt="logo"
           />
         </Box>
         <List>
-          {itemList.map((item, index) => (
+          {itemList.map((item) => (
             <ListItem key={item.label} sx={{ px: 2, py: 0.4 }}>
               <ListItemButton
                 selected={pathname.includes(item.href)}
-                onClick={() => {
-                  navigate(item.href);
-                }}
+                onClick={() => navigate(item.href)}
                 sx={{
                   borderRadius: "10px",
-                  border: "1px solid white",
                   "&:hover": {
-                    backgroundColor: "#c7d5ff",
-                    color: "#030ce9",
-                    border: "2px solid #030ce9",
+                    backgroundColor: "#5C6BC0",
+                    color: "#FFF",
+                    border: "2px solid #5C6BC0",
                   },
                   "&.Mui-selected": {
-                    backgroundColor: "#030ce9",
+                    backgroundColor: "#3949AB",
                     color: "white",
                   },
                   "&.Mui-selected:hover": {
-                    backgroundColor: "#030ce9",
+                    backgroundColor: "#3949AB",
                     color: "white",
                   },
                 }}
@@ -139,59 +171,90 @@ export default function AdminLayout() {
                 <ListItemIcon sx={{ color: "inherit" }}>
                   <item.Icon />
                 </ListItemIcon>
-                <ListItemText>
-                  <Typography sx={{ fontWeight: "600" }}>
-                    {item.label}
-                  </Typography>
-                </ListItemText>
+                {isDrawerOpen && (
+                  <ListItemText>
+                    <Typography sx={{ fontWeight: "600" }}>
+                      {item.label}
+                    </Typography>
+                  </ListItemText>
+                )}
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <Divider color="#CDCDCE" sx={{ mt: 2 }} />
-        <List>
-          <ListItem sx={{ px: 2, py: 0.4 }}>
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{
-                borderRadius: "10px",
-                border: "1px solid white",
-                "&:hover": {
-                  backgroundColor: "#c7d5ff",
-                  color: "#030ce9",
-                  border: "2px solid #030ce9",
-                },
-                "&.Mui-selected": {
-                  backgroundColor: "#030ce9",
-                  color: "white",
-                },
-                "&.Mui-selected:hover": {
-                  backgroundColor: "#030ce9",
-                  color: "white",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "inherit" }}>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography sx={{ fontWeight: "600" }}>Logout</Typography>
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
+        <Divider color="#E0E0E0" sx={{ mt: 2 }} />
       </Drawer>
       <Box
-        component="main"
         sx={{
           flexGrow: 1,
-          backgroundColor: "white",
+          transition: 'margin-left 0.3s', // Mượt mà khi nội dung giãn ra
+          backgroundColor: "#FAFAFA",
           minHeight: "100vh",
           height: "100%",
           minWidth: 650,
         }}
       >
-        <Outlet />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "top",
+            padding: 1,
+            backgroundColor: "#E8EAF6",
+          }}
+        >
+          <ListItemIcon
+            sx={{ justifyContent: "center", fontSize: 60, color: "#3949AB", cursor: 'pointer' }}
+            onClick={toggleDrawer}
+          >
+            <MenuIcon />
+          </ListItemIcon>
+
+          <Box sx={{ display: 'flex', alignItems: 'right' }}>
+            <Typography sx={{ color: "#3949AB" }}>
+              Welcome, {displayUsername}
+            </Typography>
+            <ListItemIcon
+              sx={{ justifyContent: "center", fontSize: 60, color: "#3949AB", cursor: 'pointer' }}
+              onClick={handleClick}
+            >
+              <PersonOutlineIcon />
+            </ListItemIcon>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem onClick={handleProfile}>
+                <ListItemIcon>
+                  <AccountCircleIcon fontSize="small" />
+                </ListItemIcon>
+                Profile
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Box>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            backgroundColor: "#FAFAFA",
+            minHeight: "100vh",
+            height: "98%",
+            minWidth: 650,
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );
