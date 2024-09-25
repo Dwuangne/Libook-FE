@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { loginApi } from "../../api/UserApi";
+import { loginApi, loginGoogleApi } from "../../api/UserApi";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-
+import { GoogleLogin } from "@react-oauth/google";
 //UI
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import Eye from "@mui/icons-material/Visibility";
 import EyeOff from "@mui/icons-material/VisibilityOff";
 import { Box, CircularProgress, Typography } from "@mui/material";
+
 
 const Login = () => {
   window.document.tiltle = "Sign In";
@@ -35,36 +36,14 @@ const Login = () => {
       toast.error("The password is required", { autoClose: 1500 });
       return;
     }
-
+  
     loginApi(username, password)
       .then((res) => {
         const accessToken = res?.data?.data;
-        const decodedAccessToken = jwtDecode(accessToken.jwtToken);
-        const username =decodedAccessToken ? decodedAccessToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] : null;
-        
-        localStorage.setItem("accessToken", accessToken.jwtToken);
-        localStorage.setItem("username", username);
-
-        toast.success("Login successfully", { autoClose: 1500 });
-
+        handleLoginSuccess(accessToken.jwtToken); // Gọi hàm xử lý token chung
         setTimeout(() => {
           setLoading(true);
         }, 2000);
-
-        setTimeout(() => {
-          console.log("Decoded Access Token", decodedAccessToken);
-          console.log("Login success", res);
-          const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-
-          if (role === "Admin") {
-              navigate("/admin");
-          } else if (role === "Customer") {
-              navigate("/");
-          } else {
-              navigate("/signin");
-          }
-          
-        }, 5000);
       })
       .catch((err) => {
         console.error("Sign In Failed", err);
@@ -72,6 +51,44 @@ const Login = () => {
         toast.error(errorMessage, { autoClose: 1500 });
         setLoading(false);
       });
+  };
+
+  const handleGoogleLogin = (token) => {
+    loginGoogleApi(token)
+      .then((res) => {
+        const accessToken = res?.data?.data;
+        handleLoginSuccess(accessToken.jwtToken); // Gọi hàm xử lý token chung
+      })
+      .catch((err) => {
+        console.error("Google Login Failed", err);
+        const errorMessage = err.response?.data || "Google Sign In Failed.";
+        toast.error(errorMessage, { autoClose: 1500 });
+      });
+  };
+
+  const handleLoginSuccess = (jwtToken) => {
+    const decodedAccessToken = jwtDecode(jwtToken);
+    const username = decodedAccessToken ? decodedAccessToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] : null;
+    const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  
+    // Lưu token và thông tin người dùng vào localStorage
+    localStorage.setItem("accessToken", jwtToken);
+    localStorage.setItem("username", username);
+  
+    // Hiển thị thông báo thành công
+    toast.success("Login successfully", { autoClose: 1500 });
+  
+    // Điều hướng dựa trên vai trò người dùng
+    setTimeout(() => {
+      console.log("Decoded Access Token", decodedAccessToken);
+      if (role === "Admin") {
+        navigate("/admin");
+      } else if (role === "Customer") {
+        navigate("/");
+      } else {
+        navigate("/signin");
+      }
+    }, 5000);
   };
 
   return (
@@ -280,6 +297,14 @@ const Login = () => {
                   >
                     Login
                   </Button>
+                  <Box>
+                    <Typography>Dăng nhập bằng cách khác //Tuan Tran chỉnh lại cho đẹp dùm </Typography>
+                    <GoogleLogin
+                      onSuccess={(response) => handleGoogleLogin(response.credential)}
+                      onError={() => {console.log("Login Failed");}} // Thay bằng toast báo lỗi 
+                    />
+                  </Box>
+
                   <div
                     style={{
                       marginTop: "1rem",
