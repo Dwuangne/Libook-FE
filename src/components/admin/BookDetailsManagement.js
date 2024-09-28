@@ -38,6 +38,7 @@ export default function BookDetailsManagement() {
     const [uploadedUrls, setUploadedUrls] = useState([]); // Uploaded image URLs from Firebase
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation popup
     const [imageToDelete, setImageToDelete] = useState(null); // Store image to be deleted
+    const [errors, setErrors] = useState({});
 
     //Add new product
     const [name, setName] = useState('');
@@ -88,7 +89,10 @@ export default function BookDetailsManagement() {
     // Handle image file selection and auto-upload to Firebase
     const handleImageChange = async (e) => {
         const selectedFiles = Array.from(e.target.files);
-        if (selectedFiles.length === 0) return;
+        if (selectedFiles.length === 0 || selectedFiles.length + uploadedUrls.length > MAX_IMAGES){
+            toast.error(`You can only upload ${MAX_IMAGES} images.`, { autoClose: 2000 });
+            return;
+        };
 
         setUploading(true);
         try {
@@ -122,8 +126,65 @@ export default function BookDetailsManagement() {
         }
     };
 
+    const validateForm = () => {
+        let valid = true;
+        let errors = {};
+
+        if (!name || name.length < 3) {
+            errors.name = "Name has to be a minimum of 3 characters";
+            valid = false;
+        }
+
+        if (!description) {
+            errors.description = "Description is required";
+            valid = false;
+        }
+
+        if (!price || price <= 0) {
+            errors.price = "Price must be greater than 0";
+            valid = false;
+        }
+
+        if (!percentDiscount || percentDiscount < 0 || percentDiscount > 100) {
+            errors.percentDiscount = "Percent discount must be between 0 and 100";
+            valid = false;
+        }
+
+        if (!remain || remain <= 0) {
+            errors.remain = "Remain must be greater than 0";
+            valid = false;
+        }
+
+        if (!authorId) {
+            errors.authorId = "Author is required";
+            valid = false;
+        }
+
+        if (!categoryId) {
+            errors.categoryId = "Category is required";
+            valid = false;
+        }
+
+        if (!supplierId) {
+            errors.supplierId = "Supplier is required";
+            valid = false;
+        }
+
+        if (!description) {
+            errors.description = "Description is required";
+            valid = false;
+        }
+
+        setErrors(errors); // Save the errors to state
+        return valid;
+    };
+
+
     //Add book
     const handleAddBook = async () => {
+        if (!validateForm()) {
+            return; // If form is invalid, don't proceed
+        }
         // Gửi bookData đến API
         try {
             const bookImages = uploadedUrls.map(url => ({ bookImageUrl: url }))
@@ -158,8 +219,9 @@ export default function BookDetailsManagement() {
                                 variant="outlined"
                                 size="small"
                                 value={name}
-                                
                                 onChange={(e) => setName(e.target.value)}
+                                error={!!errors.name} // Shows error state
+                                helperText={errors.name} // Displays error message
                             />
                         </Grid>
                         {/* Price */}
@@ -175,6 +237,8 @@ export default function BookDetailsManagement() {
                                 size="small"
                                 value={price}
                                 onChange={(e) => setPrice(e.target.value)}
+                                error={!!errors.price} // Shows error state
+                                helperText={errors.price} // Displays error message
                             />
                         </Grid>
 
@@ -191,6 +255,8 @@ export default function BookDetailsManagement() {
                                 size="small"
                                 value={remain}
                                 onChange={(e) => setRemain(e.target.value)}
+                                error={!!errors.remain} // Shows error state
+                                helperText={errors.remain} // Displays error message
                             />
                         </Grid>
 
@@ -207,6 +273,8 @@ export default function BookDetailsManagement() {
                                 size="small"
                                 value={percentDiscount}
                                 onChange={(e) => setPercentDiscount(e.target.value)}
+                                error={!!errors.percentDiscount} // Shows error state
+                                helperText={errors.percentDiscount} // Displays error message
                             />
                         </Grid>
 
@@ -219,7 +287,10 @@ export default function BookDetailsManagement() {
                                 getOptionLabel={(option) => option?.name || ""}
                                 // value={option.name}
                                 onChange={(e, newValue) => setAuthorId(newValue.id)}
-                                renderInput={(params) => <TextField {...params} label="Author" variant="outlined" size="small" />}
+                                renderInput={(params) => <TextField {...params} label="Author" variant="outlined" size="small"
+                                    error={!!errors.authorId} // Shows error state
+                                    helperText={errors.authorId} // Displays error message
+                                />}
                             />
                         </Grid>
 
@@ -232,7 +303,10 @@ export default function BookDetailsManagement() {
                                 getOptionLabel={(option) => option?.name || ""}
                                 // value={option.name}
                                 onChange={(e, newValue) => setCategoryId(newValue.id)}
-                                renderInput={(params) => <TextField {...params} label="Category" variant="outlined" size="small" />}
+                                renderInput={(params) => <TextField {...params} label="Category" variant="outlined" size="small"
+                                    error={!!errors.categoryId} // Shows error state
+                                    helperText={errors.categoryId} // Displays error message
+                                />}
                             />
                         </Grid>
 
@@ -245,7 +319,10 @@ export default function BookDetailsManagement() {
                                 getOptionLabel={(option) => option?.name || ""}
                                 // value={option.name}
                                 onChange={(e, newValue) => setSupplierId(newValue.id)}
-                                renderInput={(params) => <TextField {...params} label="Supplier" variant="outlined" size="small" />}
+                                renderInput={(params) => <TextField {...params} label="Supplier" variant="outlined" size="small"
+                                    error={!!errors.supplierId} // Shows error state
+                                    helperText={errors.supplierId} // Displays error message
+                                />}
                             />
                         </Grid>
 
@@ -259,13 +336,21 @@ export default function BookDetailsManagement() {
                             <FormControlLabel
                                 control={
                                     <Switch
-                                        sx={{ color: "#3F51B5" }}
                                         checked={isActive}
                                         onChange={(e) => setIsActive(e.target.checked)}
+                                        sx={{
+                                            "& .MuiSwitch-switchBase.Mui-checked": {
+                                                color: "#3F51B5",
+                                            },
+                                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                                                backgroundColor: "#3F51B5",
+                                            },
+                                        }}
                                     />
                                 }
                             />
                         </Grid>
+
 
                         {/* Image Upload */}
                         <Grid item xs={12} md={2}>
@@ -278,7 +363,7 @@ export default function BookDetailsManagement() {
                                 variant="contained"
                                 component="label"
                                 sx={{ width: '100%', mb: 2, backgroundColor: '#3F51B5', color: 'white' }}
-                                disabled={uploading ||uploadedUrls.length >= MAX_IMAGES}
+                                disabled={uploading || uploadedUrls.length >= MAX_IMAGES}
                             >
                                 {uploading ? 'Uploading...' : 'Select Images'}
                                 <input
@@ -318,9 +403,9 @@ export default function BookDetailsManagement() {
                                                     top: 0,
                                                     right: 0,
                                                     color: 'white',
-                                                    backgroundColor: '3F51B5',
-                                                    borderRadius: '40%',
-                                                    padding: '4px',
+                                                    backgroundColor: 'red',
+                                                    borderRadius: '20%',
+                                                    padding: '3px',
                                                     minWidth: 'unset',
                                                 }}
                                             >
@@ -347,33 +432,42 @@ export default function BookDetailsManagement() {
                                 rows={4}
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                inputProps={{ style: { overflow: 'auto' } }}
+                                error={!!errors.description} // Shows error state
+                                helperText={errors.description} // Displays error message
+                                inputProps={{
+                                    style: { overflow: 'auto' }
+                                }}
                             />
                         </Grid>
-                        {/* Add Book Button */}
-                        <Grid item xs={12} md={4} sx={{ mt: 2 }}>
-                            <Button variant="contained"
-                                sx={{
-                                    backgroundColor: "#3F51B5", // Consistent primary color
-                                    color: "white",
-                                    borderRadius: "20px",
-                                    fontSize: 15,
-                                    fontWeight: "bold",
-                                    padding: "4px 10px", // Adjust padding to fit the text better
-                                    whiteSpace: "nowrap", // Prevent text from wrapping
-                                    width: "150px", // Adjust width to ensure "Add New Book" fits
-                                    transition: "all 0.4s ease-in-out",
-                                    border: "2px solid #3F51B5",
-                                    "&:hover": {
-                                        backgroundColor: "white",
-                                        color: "#3F51B5",
-                                        border: "2px solid #3F51B5",
-                                    }
-                                }} onClick={handleAddBook}>
-                                Add Book
-                            </Button>
-                        </Grid>
                     </Grid>
+                    {/* Add Book Button */}
+                    <Grid item xs={12} md={4} sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#3F51B5",
+                                color: "white",
+                                borderRadius: "20px",
+                                fontSize: 15,
+                                fontWeight: "bold",
+                                padding: "4px 10px",
+                                whiteSpace: "nowrap",
+                                width: "150px",
+                                transition: "all 0.4s ease-in-out",
+                                border: "2px solid #3F51B5",
+                                "&:hover": {
+                                    backgroundColor: "white",
+                                    color: "#3F51B5",
+                                    border: "2px solid #3F51B5",
+                                }
+                            }}
+                            onClick={handleAddBook}
+                        >
+                            Save
+                        </Button>
+                    </Grid>
+
+
                 </Box>
             </LocalizationProvider>
 
