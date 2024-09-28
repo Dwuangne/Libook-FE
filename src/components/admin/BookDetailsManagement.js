@@ -28,7 +28,6 @@ import { AddBookApi } from '../../api/BookApi';
 import { GetAuthorApi } from '../../api/AuthorApi';
 import { GetSupplierApi } from '../../api/Supplier';
 import { GetCategoryApi } from '../../api/CategoryApi';
-import { set } from "date-fns";
 
 const MAX_IMAGES = 5;
 const MAX_SIZE_MB = 2; // Limit the size to 2MB (for example)
@@ -139,7 +138,7 @@ export default function BookDetailsManagement() {
     return (
         <Box sx={{ flexGrow: 1, minHeight: "100vh", backgroundColor: "#FFFFFF" }}>
             {/* Header Section */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 3, boxShadow: '0 5px 10px rgba(0, 0, 0, 0.05)' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, boxShadow: '0 5px 10px rgba(0, 0, 0, 0.05)' }}>
                 <Typography sx={{ fontSize: 20, fontWeight: 600, color: "#3F51B5" }}>Add Book</Typography>
             </Box>
 
@@ -267,8 +266,6 @@ export default function BookDetailsManagement() {
                                 }
                             />
                         </Grid>
-
-
 
                         {/* Image Upload */}
                         <Grid item xs={12} md={2}>
