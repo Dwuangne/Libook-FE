@@ -247,9 +247,8 @@ export default function AdminLayout() {
           component="main"
           sx={{
             flexGrow: 1,
-            backgroundColor: "#FAFAFA",
             minHeight: "100vh",
-            height: "98%",
+            height: "100%",
             minWidth: 650,
           }}
         >

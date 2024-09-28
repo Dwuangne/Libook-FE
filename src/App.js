@@ -12,6 +12,7 @@ import AdminHome from "./components/admin/AdminHome";
 //import "./reset.css";
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
+import ProductDetailsManagement from "./components/admin/BookDetailsManagement";
 import ProductManagement from "./components/admin/BookManagement";
 import VoucherManagement from "./components/admin/VoucherManagement";
 import MessageManagement from "./components/admin/MessageManagement";
@@ -31,6 +32,7 @@ function App() {
             <Route index element={<Navigate to={"/admin/dashboard"} />} />
             <Route path="dashboard" element={<AdminHome />} />
             <Route path="books" element={<ProductManagement />} />
+            <Route path="bookdetails" element={<ProductDetailsManagement />} />
             <Route path="vouchers" element={<VoucherManagement />} />
             <Route path="messages" element={<MessageManagement />} />
             <Route path="reports" element={<ReportManagement />} />
