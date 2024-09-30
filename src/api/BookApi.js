@@ -27,3 +27,13 @@ export const AddBookApi = (
     bookImages: bookImages,
   });
 };
+
+export const AllBooksApi = (params) => {
+  return axiosJWT.get(URL_BOOK, {
+    params: params,
+  });
+};
+
+export const BookByIdApi = (bookId) => {
+  return axiosJWT.get(`${URL_BOOK}/${bookId}`);
+};
