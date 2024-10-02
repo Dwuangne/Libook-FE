@@ -337,7 +337,7 @@ const BookList = () => {
       {/* Danh sách sách */}
       <Grid container spacing={3}>
         {loading ? (
-          <CircularProgress />
+          <CircularProgress sx={{ color: "#003ce9" }} />
         ) : Books.length > 0 ? (
           Books.map((book, index) => (
             <Grid item xs={12} md={6} lg={4} key={index}>

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png"
+import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LogoutIcon from "@mui/icons-material/Logout";
-import BookIcon from '@mui/icons-material/AutoStories';
-import MessageIcon from '@mui/icons-material/Chat';
-import VoucherIcon from '@mui/icons-material/Discount';
-import ReportIcon from '@mui/icons-material/Assessment';
+import BookIcon from "@mui/icons-material/AutoStories";
+import MessageIcon from "@mui/icons-material/Chat";
+import VoucherIcon from "@mui/icons-material/Discount";
+import ReportIcon from "@mui/icons-material/Assessment";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,10 +18,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from '@mui/icons-material/Menu';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Typography,Menu, MenuItem} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { Typography, Menu, MenuItem } from "@mui/material";
 import { toast } from "react-toastify";
 const drawerWidthOpen = 240; // Chiều rộng khi menu mở
 const drawerWidthClosed = 0; // Chiều rộng khi menu đóng
@@ -90,7 +90,7 @@ export default function AdminLayout() {
   };
 
   const truncateUsername = (fullUsername) => {
-    const atIndex = fullUsername.indexOf('@');
+    const atIndex = fullUsername.indexOf("@");
     return atIndex !== -1 ? fullUsername.slice(0, atIndex) : fullUsername;
   };
 
@@ -113,10 +113,10 @@ export default function AdminLayout() {
         sx={{
           width: isDrawerOpen ? drawerWidthOpen : drawerWidthClosed,
           flexShrink: 0,
-          transition: 'width 0.3s', // Thêm transition để mượt mà
+          transition: "width 0.3s", // Thêm transition để mượt mà
           "& .MuiDrawer-paper": {
             width: isDrawerOpen ? drawerWidthOpen : drawerWidthClosed,
-            transition: 'width 0.3s', // Thêm transition cho phần Drawer
+            transition: "width 0.3s", // Thêm transition cho phần Drawer
             boxSizing: "border-box",
             borderRadius: "5px",
             backgroundColor: "#b2c4f8",
@@ -187,7 +187,7 @@ export default function AdminLayout() {
       <Box
         sx={{
           flexGrow: 1,
-          transition: 'margin-left 0.3s', // Mượt mà khi nội dung giãn ra
+          transition: "margin-left 0.3s", // Mượt mà khi nội dung giãn ra
           backgroundColor: "#FAFAFA",
           minHeight: "100vh",
           height: "100%",
@@ -204,18 +204,28 @@ export default function AdminLayout() {
           }}
         >
           <ListItemIcon
-            sx={{ justifyContent: "center", fontSize: 60, color: "#3949AB", cursor: 'pointer' }}
+            sx={{
+              justifyContent: "center",
+              fontSize: 60,
+              color: "#3949AB",
+              cursor: "pointer",
+            }}
             onClick={toggleDrawer}
           >
             <MenuIcon />
           </ListItemIcon>
 
-          <Box sx={{ display: 'flex', alignItems: 'right' }}>
+          <Box sx={{ display: "flex", alignItems: "right" }}>
             <Typography sx={{ color: "#3949AB" }}>
               Welcome, {displayUsername}
             </Typography>
             <ListItemIcon
-              sx={{ justifyContent: "center", fontSize: 60, color: "#3949AB", cursor: 'pointer' }}
+              sx={{
+                justifyContent: "center",
+                fontSize: 60,
+                color: "#3949AB",
+                cursor: "pointer",
+              }}
               onClick={handleClick}
             >
               <PersonOutlineIcon />
@@ -225,7 +235,7 @@ export default function AdminLayout() {
               open={open}
               onClose={handleClose}
               MenuListProps={{
-                'aria-labelledby': 'basic-button',
+                "aria-labelledby": "basic-button",
               }}
             >
               <MenuItem onClick={handleProfile}>

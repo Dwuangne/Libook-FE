@@ -17,7 +17,9 @@ const Footer = () => {
   if (
     pathname.includes("admin") ||
     pathname.includes("successPayment") ||
-    pathname.includes("failedPayment")
+    pathname.includes("failedPayment") ||
+    pathname.includes("signin") ||
+    pathname.includes("signup")
   ) {
     return <></>;
   }
@@ -33,6 +35,7 @@ const Footer = () => {
         boxShadow: "1px 1px 3px rgba(0,0,0.16)",
         padding: "1rem 0",
         paddingBottom: "0.5rem",
+        paddingTop: "0.5rem",
       }}
     >
       <Container maxWidth="lg">

@@ -11,8 +11,8 @@ import Input from "@mui/material/Input";
 import IconButton from "@mui/material/IconButton";
 import Eye from "@mui/icons-material/Visibility";
 import EyeOff from "@mui/icons-material/VisibilityOff";
+import Divider from "@mui/material/Divider";
 import { Box, CircularProgress, Typography } from "@mui/material";
-
 
 const Login = () => {
   window.document.tiltle = "Sign In";
@@ -36,7 +36,7 @@ const Login = () => {
       toast.error("The password is required", { autoClose: 1500 });
       return;
     }
-  
+
     loginApi(username, password)
       .then((res) => {
         const accessToken = res?.data?.data;
@@ -68,16 +68,23 @@ const Login = () => {
 
   const handleLoginSuccess = (jwtToken) => {
     const decodedAccessToken = jwtDecode(jwtToken);
-    const username = decodedAccessToken ? decodedAccessToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] : null;
-    const role = decodedAccessToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-  
+    const username = decodedAccessToken
+      ? decodedAccessToken[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+        ]
+      : null;
+    const role =
+      decodedAccessToken[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ];
+
     // Lưu token và thông tin người dùng vào localStorage
     localStorage.setItem("accessToken", jwtToken);
     localStorage.setItem("username", username);
-  
+
     // Hiển thị thông báo thành công
     toast.success("Login successfully", { autoClose: 1500 });
-  
+
     // Điều hướng dựa trên vai trò người dùng
     setTimeout(() => {
       console.log("Decoded Access Token", decodedAccessToken);
@@ -92,7 +99,7 @@ const Login = () => {
   };
 
   return (
-    <div style={{ marginTop: "1rem" }}>
+    <div style={{ marginTop: "3rem" }}>
       {loading ? (
         <Box
           sx={{
@@ -104,7 +111,7 @@ const Login = () => {
             backgroundColor: "#f5f5f5",
           }}
         >
-          <CircularProgress sx={{ color: "#ff469e" }} size={90} />
+          <CircularProgress sx={{ color: "#003ce9" }} size={90} />
         </Box>
       ) : (
         <div
@@ -285,6 +292,7 @@ const Login = () => {
                       fontSize: 16,
                       fontWeight: "bold",
                       width: "10vw",
+                      marginBottom: "1rem",
                       transition:
                         "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
                       border: "2px solid #030CE9 ",
@@ -297,11 +305,37 @@ const Login = () => {
                   >
                     Login
                   </Button>
-                  <Box>
-                    <Typography>Dăng nhập bằng cách khác //Tuan Tran chỉnh lại cho đẹp dùm </Typography>
+
+                  <Divider
+                    textAlign="center"
+                    sx={{
+                      width: "50%", // Chiều rộng ngắn hơn
+                      margin: "auto",
+                    }}
+                  >
+                    or
+                  </Divider>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%", // Chiếm toàn bộ chiều rộng của container cha
+                      marginTop: "1rem", // Cách phía trên một khoảng
+                    }}
+                  >
                     <GoogleLogin
-                      onSuccess={(response) => handleGoogleLogin(response.credential)}
-                      onError={() => {console.log("Login Failed");}} // Thay bằng toast báo lỗi 
+                      onSuccess={(response) =>
+                        handleGoogleLogin(response.credential)
+                      }
+                      onError={() => {
+                        console.log("Login Failed");
+                      }} // Thay bằng toast báo lỗi
+                      style={{
+                        borderRadius: "30px",
+                        border: "2px solid #030CE9",
+                      }}
                     />
                   </Box>
 

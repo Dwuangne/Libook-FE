@@ -27,7 +27,7 @@ const Register = () => {
   };
 
   const handleSubmit = (event) => {
-event.preventDefault();
+    event.preventDefault();
     console.log("form subbmited ", username, password, confirmPassword);
 
     if (confirmPassword !== password) {
@@ -92,7 +92,7 @@ event.preventDefault();
   }
 
   return (
-    <div style={{ marginTop: "1rem" }}>
+    <div style={{ marginTop: "0.2rem" }}>
       <div
         style={{
           // backgroundImage:
