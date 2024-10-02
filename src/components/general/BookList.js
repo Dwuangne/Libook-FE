@@ -118,19 +118,19 @@ const BookList = () => {
       const authorMap = authorData.reduce((x, item) => {
         x[item.id] = item.name;
         return x;
-      });
+      }, {});
       setAuthorMap(authorMap);
 
       const categoryMap = categoryData.reduce((x, item) => {
         x[item.id] = item.name;
         return x;
-      });
+      }, {});
       setCategoryMap(categoryMap);
 
       const supplierMap = supplierData.reduce((x, item) => {
         x[item.id] = item.name;
         return x;
-      });
+      }, {});
       setSupplierMap(supplierMap);
     } catch (err) {
       console.log(err);
@@ -345,7 +345,8 @@ const BookList = () => {
                 sx={{
                   display: "flex",
                   flexDirection: "column",
-                  height: "100%",
+                  height: "370px",
+                  width: "250px",
                 }}
               >
                 <CardMedia
@@ -353,9 +354,11 @@ const BookList = () => {
                   image={book.imageUrl}
                   alt={book.name}
                   sx={{
-                    height: 200,
+                    height: "100%", // Chiều cao 100% để giữ nguyên kích thước
                     width: "100%",
-                    objectFit: "cover",
+                    objectFit: "contain", // Giữ tỉ lệ khung hình mà không bị cắt
+                    maxHeight: "200px", // Chiều cao tối đa để hình ảnh không quá lớn
+                    backgroundColor: "#f0f0f0", // Màu nền nếu ảnh nhỏ hơn kích thước
                   }}
                 />
                 <CardContent
@@ -368,17 +371,18 @@ const BookList = () => {
                   <Typography
                     variant="h6"
                     sx={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      width: "100%",
-                      maxHeight: "2rem",
-                      lineHeight: "2rem",
                       textAlign: "center",
+                      width: "100%",
+                      height: "3rem", // Thiết lập chiều cao cố định cho tiêu đề
+                      overflow: "hidden", // Đảm bảo nội dung không bị vỡ
+                      textOverflow: "ellipsis",
+                      lineHeight: "1.5rem",
+                      whiteSpace: "normal", // Bắt buộc xuống dòng khi văn bản dài
                     }}
                   >
                     {book.name}
                   </Typography>
+
                   <Typography variant="body2" sx={{ textAlign: "center" }}>
                     Author: {authorMap[book.authorId] || "Unknown"}
                   </Typography>

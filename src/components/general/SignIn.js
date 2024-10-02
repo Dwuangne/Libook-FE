@@ -43,7 +43,7 @@ const Login = () => {
         handleLoginSuccess(accessToken.jwtToken); // Gọi hàm xử lý token chung
         setTimeout(() => {
           setLoading(true);
-        }, 2000);
+        }, 1000);
       })
       .catch((err) => {
         console.error("Sign In Failed", err);
