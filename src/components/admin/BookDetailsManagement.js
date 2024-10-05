@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-    Grid,
-    TextField,
-    FormControlLabel,
-    Switch,
-    Typography,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Autocomplete
+    Box, Typography, TextField, Button, Switch,
+    FormControlLabel, Autocomplete, Dialog, DialogTitle,
+    DialogContent, DialogContentText, DialogActions,
+    Paper,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { toast } from "react-toastify";
 import { uploadImagesToFirebase, deleteImageFromFirebase } from '../../FirebaseImage/FirebaseFunction';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +27,7 @@ export default function BookDetailsManagement() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation popup
     const [imageToDelete, setImageToDelete] = useState(null); // Store image to be deleted
     const [errors, setErrors] = useState({});
-    const navigator = useNavigate();
+    const navigate = useNavigate();
     const combinedImages = [...uploadedUrls, ...selectedFiles.map(fileObj => fileObj.url)];
 
     //Add new product
@@ -204,6 +196,10 @@ export default function BookDetailsManagement() {
             errors.description = "Description is required";
             valid = false;
         }
+        if (selectedFiles.length === 0 && uploadedUrls.length === 0) {
+            errors.image = "Image is required";
+            valid = false;
+        }
 
         setErrors(errors); // Save the errors to state
         return valid;
@@ -226,8 +222,8 @@ export default function BookDetailsManagement() {
         } catch (error) {
 
             toast.error('Error adding book:', error);
-        }finally{
-            navigator("/admin/books");
+        } finally {
+            navigate("/admin/books");
         }
     };
     return (
@@ -322,7 +318,7 @@ export default function BookDetailsManagement() {
                             options={authors}
                             getOptionLabel={(option) => option?.name || ""}
                             // value={option.name}
-                            onChange={(e, newValue) => setAuthorId(newValue.id)}
+                            onChange={(e, newValue) => newValue ? setAuthorId(newValue.id) : setAuthorId("")}
                             renderInput={(params) => <TextField {...params} label="Author" variant="outlined" size="small"
                                 error={!!errors.authorId} // Shows error state
                                 helperText={errors.authorId} // Displays error message
@@ -338,7 +334,7 @@ export default function BookDetailsManagement() {
                             options={categories || []}
                             getOptionLabel={(option) => option?.name || ""}
                             // value={option.name}
-                            onChange={(e, newValue) => setCategoryId(newValue.id)}
+                            onChange={(e, newValue) => newValue ? setCategoryId(newValue.id) : setCategoryId("")}
                             renderInput={(params) => <TextField {...params} label="Category" variant="outlined" size="small"
                                 error={!!errors.categoryId} // Shows error state
                                 helperText={errors.categoryId} // Displays error message
@@ -354,7 +350,7 @@ export default function BookDetailsManagement() {
                             options={suppliers || []}
                             getOptionLabel={(option) => option?.name || ""}
                             // value={option.name}
-                            onChange={(e, newValue) => setSupplierId(newValue.id)}
+                            onChange={(e, newValue) => newValue ? setSupplierId(newValue.id) : setSupplierId("")}
                             renderInput={(params) => <TextField {...params} label="Supplier" variant="outlined" size="small"
                                 error={!!errors.supplierId} // Shows error state
                                 helperText={errors.supplierId} // Displays error message
@@ -388,18 +384,36 @@ export default function BookDetailsManagement() {
                     </Grid>
 
 
-                    {/* Image Upload */}
-                    <Grid item xs={12} md={2}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'left' }}>
-                            Upload Images (Max 5)
+                    <Grid item xs={12} md={2} sx={{ textAlign: 'left' }}>
+                        <Typography 
+                            variant="subtitle1" 
+                            sx={{ 
+                                fontWeight: 500, 
+                                color: '#424242',
+                                textAlign: 'left'
+                            }}
+                        >
+                            Upload Images
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary" sx={{ textAlign: 'left' }}>
+                            Max 5 images
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             component="label"
-                            sx={{ width: '100%', mb: 2, backgroundColor: '#3F51B5', color: 'white' }}
-                            disabled={uploading || uploadedUrls.length >= MAX_IMAGES}
+                            sx={{ 
+                                width: '100%', 
+                                mb: 2, 
+                                borderColor: '#3F51B5', 
+                                color: '#3F51B5',
+                                '&:hover': {
+                                    backgroundColor: '#3F51B5',
+                                    color: 'white'
+                                }
+                            }}
+                            disabled={uploading || uploadedUrls.length + selectedFiles.length >= MAX_IMAGES}
                         >
                             {uploading ? 'Uploading...' : 'Select Images'}
                             <input
@@ -413,24 +427,28 @@ export default function BookDetailsManagement() {
                         <Grid container spacing={2}>
                             {combinedImages.map((url, index) => (
                                 <Grid item key={index} xs={6} sm={4}>
-                                    <Box
+                                    <Paper
+                                        elevation={2}
                                         sx={{
                                             position: 'relative',
                                             height: 100,
                                             width: 100,
                                             borderRadius: '8px',
                                             overflow: 'hidden',
-                                            border: '1px solid #ddd',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            mb: 1,
+                                            transition: 'transform 0.3s',
+                                            '&:hover': {
+                                                transform: 'scale(1.05)'
+                                            }
                                         }}
                                     >
                                         <img
                                             src={url}
                                             alt={`Uploaded ${index}`}
-                                            style={{ height: '100%', width: '100%', objectFit: 'cover' }}
+                                            style={{ 
+                                                height: '100%', 
+                                                width: '100%', 
+                                                objectFit: 'cover' 
+                                            }}
                                         />
                                         <Button
                                             onClick={() => openDeleteDialog(url)}
@@ -438,16 +456,20 @@ export default function BookDetailsManagement() {
                                                 position: 'absolute',
                                                 top: 0,
                                                 right: 0,
+                                                minWidth: '24px',
+                                                width: '24px',
+                                                height: '24px',
+                                                p: 0,
+                                                backgroundColor: 'rgba(255, 0, 0, 0.7)',
                                                 color: 'white',
-                                                backgroundColor: 'red',
-                                                borderRadius: '20%',
-                                                padding: '3px',
-                                                minWidth: 'unset',
+                                                '&:hover': {
+                                                    backgroundColor: 'red'
+                                                }
                                             }}
                                         >
-                                            &times;
+                                            ×
                                         </Button>
-                                    </Box>
+                                    </Paper>
                                 </Grid>
                             ))}
                         </Grid>
@@ -473,52 +495,69 @@ export default function BookDetailsManagement() {
                         />
                     </Grid>
                 </Grid>
-                {/* Add Book Button */}
-                <Grid item xs={12} md={4} sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                {/* Save Button */}
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                     <Button
                         variant="contained"
                         sx={{
                             backgroundColor: "#3F51B5",
                             color: "white",
-                            borderRadius: "20px",
-                            fontSize: 15,
+                            borderRadius: "28px",
+                            fontSize: 16,
                             fontWeight: "bold",
-                            padding: "4px 10px",
-                            whiteSpace: "nowrap",
-                            width: "150px",
-                            transition: "all 0.4s ease-in-out",
-                            border: "2px solid #3F51B5",
-                            "&:hover": {
-                                backgroundColor: "white",
-                                color: "#3F51B5",
-                                border: "2px solid #3F51B5",
+                            padding: "10px 48px",
+                            textTransform: 'none',
+                            boxShadow: '0 4px 6px rgba(63, 81, 181, 0.25)',
+                            transition: 'all 0.3s ease-in-out',
+                            '&:hover': {
+                                backgroundColor: "#283593",
+                                boxShadow: '0 6px 10px rgba(63, 81, 181, 0.3)',
                             }
                         }}
                         onClick={handleAddBook}
                     >
-                        Save
+                        Save Book
                     </Button>
-                </Grid>
-
-
-            </Box>
+                </Box>
+            </Box >
 
             {/* Delete Confirmation Dialog */}
-            <Dialog
+            < Dialog
                 open={deleteDialogOpen}
-                onClose={() => setDeleteDialogOpen(false)}
+                onClose={() => setDeleteDialogOpen(false)
+                }
+                PaperProps={{
+                    sx: {
+                        borderRadius: '12px',
+                        padding: '12px'
+                    }
+                }}
             >
-                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogTitle sx={{ color: '#1a237e' }}>
+                    Confirm Delete
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Are you sure you want to delete this image?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={handleConfirmDelete} color="primary">Delete</Button>
+                    <Button
+                        onClick={() => setDeleteDialogOpen(false)}
+                        sx={{ color: '#757575' }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleConfirmDelete}
+                        variant="contained"
+                        color="error"
+                        sx={{ borderRadius: '20px' }}
+                    >
+                        Delete
+                    </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </Box >
     );
 }

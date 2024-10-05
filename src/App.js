@@ -6,19 +6,21 @@ import Footer from "./components/Footer/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import HomePage from "./components/general/homePage";
+import Chatbox from "./components/general/Chatbox";
 import BookList from "./components/general/BookList";
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminHome from "./components/admin/AdminHome";
 
 //import "./reset.css";
 import "./App.css";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation} from "react-router-dom";
 import ProductDetailsManagement from "./components/admin/BookDetailsManagement";
 import ProductManagement from "./components/admin/BookManagement";
 import VoucherManagement from "./components/admin/VoucherManagement";
-import MessageManagement from "./components/admin/MessageManagement";
+import MessagesManagement from "./components/admin/MessagesManagement";
 import ReportManagement from "./components/admin/ReportManagement";
 function App() {
+  const location = useLocation(); 
   return (
     <div className="App">
       <Routes>
@@ -27,7 +29,9 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
 
-        <Route element={<ProtectedRoute allowedRole="Customer" />}></Route>
+        <Route element={<ProtectedRoute allowedRole="Customer" />}>
+
+        </Route>
 
         <Route element={<ProtectedRoute allowedRole="Admin" />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -36,12 +40,13 @@ function App() {
             <Route path="books" element={<ProductManagement />} />
             <Route path="bookdetails" element={<ProductDetailsManagement />} />
             <Route path="vouchers" element={<VoucherManagement />} />
-            <Route path="messages" element={<MessageManagement />} />
+            <Route path="messages" element={<MessagesManagement />} />
             <Route path="reports" element={<ReportManagement />} />
           </Route>
         </Route>
       </Routes>
-
+        {/* Kiểm tra nếu không phải trang admin, hiển thị Chatbox */}
+        {!location.pathname.startsWith("/admin") && <Chatbox />}
       <Footer />
       <ToastContainer />
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AllBooksApi } from "../../api/BookApi";
+import { GetAllBooksApi } from "../../api/BookApi";
 import { GetAuthorApi } from "../../api/AuthorApi";
 import { GetSupplierApi } from "../../api/Supplier";
 import { GetCategoryApi } from "../../api/CategoryApi";
@@ -70,7 +70,7 @@ const BookList = () => {
         GetAuthorApi(),
         GetSupplierApi(),
         GetCategoryApi(),
-        AllBooksApi({
+        GetAllBooksApi({
           filter: nameFilter,
           authorID: authorIdFilter,
           categoryID: categoryIdFilter,
