@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 
 export default function BookManagement() {
-    const navigator = useNavigate();
+    const navigate = useNavigate();
     return (
         <Box
             sx={{
@@ -52,7 +52,7 @@ export default function BookManagement() {
                             border: "2px solid #3F51B5",
                         }
                     }}
-                    onClick={() => navigator("/admin/bookdetails")} // Di chuyển onClick ra ngoài sx
+                    onClick={() => navigate("/admin/bookdetails")} // Di chuyển onClick ra ngoài sx
                 >
                     Add
                 </Button>
