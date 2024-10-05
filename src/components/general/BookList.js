@@ -3,53 +3,34 @@ import { AllBooksApi } from "../../api/BookApi";
 import { GetAuthorApi } from "../../api/AuthorApi";
 import { GetSupplierApi } from "../../api/Supplier";
 import { GetCategoryApi } from "../../api/CategoryApi";
-
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { ca } from "date-fns/locale";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import {
   Box,
   TextField,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   CircularProgress,
-  Container,
-  Divider,
-  Fade,
-  FormControlLabel,
-  IconButton,
-  Pagination,
-  Radio,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   RadioGroup,
+  FormControlLabel,
+  Radio,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import {
-  ClearAll,
-  KeyboardCapslock,
-  Star,
-  StarHalf,
-  StarOutline,
-} from "@mui/icons-material";
-
 import Grid from "@mui/material/Grid2";
 
 const BookList = () => {
   const navigate = useNavigate();
   window.document.title = "Books";
-  //console.log(AllBooksApi);
-  const [uploading, setUploading] = useState(false); // State for uploading process
+  const location = useLocation(); // Lấy pathname hiện tại
+  const isAdmin = location.pathname.includes("admin"); // Kiểm tra nếu là admin
   const [loading, setLoading] = useState(false);
 
   //Get info book
@@ -69,10 +50,10 @@ const BookList = () => {
   const [orDerByFilter, setOrDerByFilter] = useState("");
   const [isDescending, setIsDescending] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(12);
 
   const [visible, setVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -330,7 +311,7 @@ const BookList = () => {
           }}
           sx={{ mb: 2 }}
         >
-          Clear Filters
+          Clear
         </Button>
       </Box>
 
@@ -340,38 +321,53 @@ const BookList = () => {
           <CircularProgress sx={{ color: "#003ce9" }} />
         ) : Books.length > 0 ? (
           Books.map((book, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
+            <Grid item xs={6} sm={4} md={2.4} key={book.id}>
               <Card
                 sx={{
-                  display: "flex",
+                  boxShadow: "none",
                   flexDirection: "column",
-                  height: "370px",
-                  width: "250px",
+                  height: "300px",
+                  width: "200px",
+                  "&:hover": {
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)", // Hiệu ứng đổ bóng khi hover
+                    transform: "translateY(-5px)", // Tăng thêm hiệu ứng di chuyển nhẹ lên trên
+                    transition: "all 0.3s ease", // Thời gian chuyển đổi khi hover
+                  },
                 }}
               >
-                <CardMedia
-                  component="img"
-                  image={book.imageUrl}
-                  alt={book.name}
+                <Box
                   sx={{
-                    height: "100%", // Chiều cao 100% để giữ nguyên kích thước
-                    width: "100%",
-                    objectFit: "contain", // Giữ tỉ lệ khung hình mà không bị cắt
-                    maxHeight: "200px", // Chiều cao tối đa để hình ảnh không quá lớn
-                    backgroundColor: "#f0f0f0", // Màu nền nếu ảnh nhỏ hơn kích thước
+                    position: "relative",
+                    height: "180px",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
-                />
+                >
+                  <CardMedia
+                    component="img"
+                    image={book.imageUrl}
+                    alt={book.name}
+                    sx={{
+                      maxHeight: "100%",
+                      maxWidth: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </Box>
                 <CardContent
                   sx={{
+                    paddingLeft: 1.5,
+                    paddingRight: 1,
                     flexGrow: 1,
                     display: "flex",
                     flexDirection: "column",
                   }}
                 >
                   <Typography
-                    variant="h6"
+                    variant="h7"
                     sx={{
-                      textAlign: "center",
+                      // fontWeight: 500,
+                      textAlign: "left",
                       width: "100%",
                       height: "3rem", // Thiết lập chiều cao cố định cho tiêu đề
                       overflow: "hidden", // Đảm bảo nội dung không bị vỡ
@@ -383,21 +379,70 @@ const BookList = () => {
                     {book.name}
                   </Typography>
 
-                  <Typography variant="body2" sx={{ textAlign: "center" }}>
-                    Author: {authorMap[book.authorId] || "Unknown"}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: "center" }}>
-                    Supplier: {supplierMap[book.supplierId] || "Unknown"}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: "center" }}>
-                    Remain: {book.remain}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: "center" }}>
-                    Price: {formatCurrency(book.price)}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: "center" }}>
-                    Discount: {book.precentDiscount}% off
-                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "left",
+                      alignItems: "center",
+                      marginTop: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="h7"
+                      color="error"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {formatCurrency(
+                        book.price - (book.price * book.precentDiscount) / 100
+                      )}
+                    </Typography>
+
+                    {book.precentDiscount > 0 && (
+                      <Box
+                        sx={{
+                          backgroundColor: "red",
+                          color: "white",
+                          marginLeft: "10px",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                          fontWeight: 500,
+                        }}
+                      >
+                        -{book.precentDiscount}%
+                      </Box>
+                    )}
+                  </Box>
+
+                  {book.precentDiscount > 0 && (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        textDecoration: "line-through",
+                        color: "gray",
+                        textAlign: "left", // Căn lề trái
+                      }}
+                    >
+                      {formatCurrency(book.price)}
+                    </Typography>
+                  )}
+
+                  {isAdmin ? (
+                    <>
+                      <Typography variant="body2" sx={{ textAlign: "center" }}>
+                        Author: {authorMap[book.authorId] || "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: "center" }}>
+                        Supplier: {supplierMap[book.supplierId] || "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: "center" }}>
+                        Remain: {book.remain}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body2">
+                      Discount: {book.precentDiscount}%
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -409,4 +454,5 @@ const BookList = () => {
     </Box>
   );
 };
+
 export default BookList;
