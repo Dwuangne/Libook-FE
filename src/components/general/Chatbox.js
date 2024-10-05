@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { IconButton, Box, Typography, Paper } from '@mui/material';
+import { IconButton, Box, Typography, Paper, Button } from '@mui/material';
 import { Close, Send, ChatBubbleOutline } from '@mui/icons-material';
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 import { GetConversationByUserIdApi, GetConversationByIdApi } from "../../api/ConversationApi";
 
@@ -29,26 +30,32 @@ const ChatBox = () => {
   const [messages, setMessages] = useState("");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const navigate = useNavigate();
 
   const username = localStorage.getItem("username");
   const accessToken = localStorage.getItem("accessToken");
   let userId = null; // Sửa thành let để có thể gán lại giá trị
 
-  if (accessToken && typeof accessToken === "string") {
-    try {
-      const decodedAccessToken = jwtDecode(accessToken);
-      console.log("Decoded Access Token:", decodedAccessToken);
-      userId = decodedAccessToken.id;  // Gán giá trị cho userId
-    } catch (error) {
-      console.error("Failed to decode token:", error);
+  useEffect(() => {
+    if (accessToken && typeof accessToken === "string") {
+      try {
+        const decodedAccessToken = jwtDecode(accessToken);
+        userId = decodedAccessToken.id;
+        setIsLoggedIn(true); // Đánh dấu là đã đăng nhập
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+        setIsLoggedIn(false); // Không đăng nhập
+      }
+    } else {
+      console.warn("Invalid token specified: must be a string");
+      setIsLoggedIn(false); // Không đăng nhập
     }
-  } else {
-    console.warn("Invalid token specified: must be a string");
-  }
+  }, [accessToken]);
 
   const fetchData = async () => {
     try {
-      console.log(userId)
       const conversationsRes = await GetConversationByUserIdApi(userId);
       const conversationsData = conversationsRes?.data?.data || [];
 
@@ -86,9 +93,11 @@ const ChatBox = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    fetchData().finally(() => setLoading(false));
-  }, []);
+    if (isLoggedIn) {
+      setLoading(true);
+      fetchData().finally(() => setLoading(false));
+    }
+  }, [isLoggedIn]);
 
   const handleSelectConversation = (conversationId) => {
     setSelectedConversation(conversationId);
@@ -101,13 +110,13 @@ const ChatBox = () => {
 
   const formatMessage = (content) => {
     if (!content) return '';
-  
+
     // Split content by words to avoid breaking words in the middle
     const words = content.split(' ');
-  
+
     let formattedMessage = '';
     let currentLine = '';
-  
+
     words.forEach((word) => {
       // Nếu thêm từ hiện tại vào dòng hiện tại mà vượt quá giới hạn thì xuống dòng
       if ((currentLine + word).length > MAX_MESSAGE_LENGTH) {
@@ -117,10 +126,10 @@ const ChatBox = () => {
         currentLine += word + ' '; // Tiếp tục thêm từ vào dòng hiện tại
       }
     });
-  
+
     // Add the remaining text from the current line
-    formattedMessage += currentLine.trim(); 
-  
+    formattedMessage += currentLine.trim();
+
     return formattedMessage;
   };
 
@@ -198,6 +207,22 @@ const ChatBox = () => {
         backgroundColor: '#2c387e',
       },
     },
+    loginButton: {
+      width: '60%',
+      backgroundColor: theme.primary,
+      color: 'white',
+      borderRadius: '24px',
+      padding: '10px 0',
+      textTransform: 'none',
+      fontSize: '16px',
+      fontWeight: 500,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      },
+    },
   };
 
   return (
@@ -205,7 +230,7 @@ const ChatBox = () => {
       {isOpen && (
         <div style={styles.chatBox}>
           <div style={styles.chatHeader}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
               Chat with Us
             </Typography>
             <IconButton onClick={toggleChat} sx={{ color: 'white', p: 0.5 }}>
@@ -214,48 +239,69 @@ const ChatBox = () => {
           </div>
 
           <div style={styles.chatContent}>
-            {selectedConversation && messages.length > 0 ? (
-              messages.map((msg, index) => {
-                const isCurrentUser = participantMap[selectedConversation][msg.userId] === username;
-                return (
-                  <Box key={index} sx={{
-                    alignSelf: isCurrentUser ? 'flex-end' : 'flex-start',
-                    maxWidth: '80%',
-                  }}>
-                    <Paper sx={{
-                      p: 1.5,
-                      backgroundColor: isCurrentUser ? theme.primary : 'white',
-                      color: isCurrentUser ? 'white' : theme.text.primary,
-                      borderRadius: isCurrentUser ? '20px 20px 0 20px' : '20px 20px 20px 0',
-                      wordBreak: 'break-word',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+            {isLoggedIn ? (
+              selectedConversation && messages.length > 0 ? (
+                messages.map((msg, index) => {
+                  const isCurrentUser = participantMap[selectedConversation][msg.userId] === username;
+                  return (
+                    <Box key={index} sx={{
+                      alignSelf: isCurrentUser ? 'flex-end' : 'flex-start',
+                      maxWidth: '80%',
                     }}>
-                      <Typography variant="body2" sx={{ textAlign: "left" }}>
-                        {formatMessage(msg.content)}
-                      </Typography>
-                    </Paper>
-                  </Box>
-                );
-              })
+                      <Paper sx={{
+                        p: 1.5,
+                        backgroundColor: isCurrentUser ? theme.primary : 'white',
+                        color: isCurrentUser ? 'white' : theme.text.primary,
+                        borderRadius: isCurrentUser ? '20px 20px 0 20px' : '20px 20px 20px 0',
+                        wordBreak: 'break-word',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                      }}>
+                        <Typography variant="body2">
+                          {formatMessage(msg.content)}
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  );
+                })
+              ) : (
+                <Typography variant="body1" sx={{ color: theme.text.secondary, textAlign: 'center', mt: 2 }}>
+                  👋 Welcome! How can we help you today?
+                </Typography>
+              )
             ) : (
-              <Typography variant="body2" sx={{ color: theme.text.secondary, textAlign: 'center' }}>
-                Welcome to our chat! How can we help you today?
-              </Typography>
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Typography variant="h6" sx={{ mb: 2, color: theme.text.primary }}>
+                  Join the Conversation
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3, color: theme.text.secondary }}>
+                  Log in to start chatting with our team
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/signin")}
+                  sx={styles.loginButton}
+                >
+                  Log In to Chat
+                </Button>
+              </Box>
             )}
           </div>
 
-          <div style={styles.chatFooter}>
-            <input
-              type="text"
-              placeholder="Type a message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              style={styles.input}
-            />
-            <IconButton style={styles.sendButton} onClick={() => {/* handleSendMessage */}}>
-              <Send />
-            </IconButton>
-          </div>
+          {isLoggedIn && (
+            <div style={styles.chatFooter}>
+              <input
+                type="text"
+                placeholder="Type a message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                style={styles.input}
+              />
+              <IconButton style={styles.sendButton}>
+                <Send />
+              </IconButton>
+            </div>
+          )}
         </div>
       )}
 
@@ -268,5 +314,6 @@ const ChatBox = () => {
     </div>
   );
 };
+
 
 export default ChatBox;

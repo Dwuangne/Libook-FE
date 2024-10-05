@@ -46,7 +46,7 @@ function App() {
         </Route>
       </Routes>
         {/* Kiểm tra nếu không phải trang admin, hiển thị Chatbox */}
-        {!location.pathname.startsWith("/admin") && <Chatbox />}
+        {!(location.pathname.startsWith("/admin") || location.pathname.startsWith("/signin") || location.pathname.startsWith("/signup")) && <Chatbox />}
       <Footer />
       <ToastContainer />
     </div>
