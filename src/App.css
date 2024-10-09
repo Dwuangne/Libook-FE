@@ -58,7 +58,5 @@ html, body {
   flex: 1; /* Chiếm toàn bộ không gian còn lại giữa header và footer */
 }
 
-footer {
-  /* Footer sẽ luôn nằm ở cuối */
-}
+
 

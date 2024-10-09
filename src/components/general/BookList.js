@@ -87,10 +87,10 @@ const BookList = () => {
       setSuppliers(supplierData);
       setCategories(categoryData);
       setBooks(bookData);
-      console.log(authorData);
-      console.log(supplierData);
-      console.log(categoryData);
-      console.log(bookData);
+      // console.log(authorData);
+      // console.log(supplierData);
+      // console.log(categoryData);
+      // console.log(bookData);
 
       const authorMap = authorData.reduce((x, item) => {
         x[item.id] = item.name;
@@ -188,7 +188,7 @@ const BookList = () => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", backgroundColor: "#fafafa" }}>
       {/* Sidebar Filter */}
       <Box
         sx={{
