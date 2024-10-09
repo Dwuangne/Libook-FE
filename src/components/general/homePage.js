@@ -1,9 +1,9 @@
 import React from "react";
-
+import BookList from "./BookList";
 function HomePage() {
   return (
-    <div>
-      <h1>Đây là Homepage</h1>
+    <div backgroundColor="grey">
+      <BookList />
     </div>
   );
 }
