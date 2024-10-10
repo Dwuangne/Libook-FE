@@ -38,7 +38,7 @@ export default function BookDetailsManagement() {
     const [authorId, setAuthorId] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [supplierId, setSupplierId] = useState('');
-    const [isActive, setIsActive] = useState(true);
+    // const [isActive, setIsActive] = useState(true);
     const [description, setDescription] = useState('');
 
     const [authors, setAuthors] = useState([]);
@@ -62,9 +62,9 @@ export default function BookDetailsManagement() {
             setSuppliers(supplierData);
             setCategories(categoryData);
 
-            console.log("data", authorData);
-            console.log(supplierData);
-            console.log(categoryData);
+            // console.log("data", authorData);
+            // console.log(supplierData);
+            // console.log(categoryData);
         } catch (err) {
             console.log(err);
         }
@@ -205,6 +205,9 @@ export default function BookDetailsManagement() {
         return valid;
     };
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+    };
 
     //Add book
     const handleAddBook = async () => {
@@ -216,7 +219,7 @@ export default function BookDetailsManagement() {
             const uploadedUrlsFromImages = await handleUploadImage(selectedFiles);
             const bookImages = uploadedUrlsFromImages.map(url => ({ bookImageUrl: url }));
 
-            await AddBookApi(name, description, price, percentDiscount, remain, isActive, authorId, categoryId, supplierId, bookImages);
+            await AddBookApi(name, description, price, percentDiscount, remain, authorId, categoryId, supplierId, bookImages);
             toast.success("Book added successfully.", { autoClose: 1500 });
 
         } catch (error) {
@@ -326,6 +329,16 @@ export default function BookDetailsManagement() {
                         />
                     </Grid>
 
+                    {/* Selling price */}
+                    <Grid item xs={12} md={2}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'left' }}>
+                            Selling price:
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Typography textAlign={'left'}>{formatCurrency(price * (1 - percentDiscount / 100))}</Typography>
+                    </Grid>
+
                     <Grid item xs={12} md={2}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'left' }}>Category</Typography>
                     </Grid>
@@ -358,37 +371,12 @@ export default function BookDetailsManagement() {
                         />
                     </Grid>
 
-                    {/* Is Active */}
-                    <Grid item xs={12} md={2}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'left' }}>
-                            Active
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={isActive}
-                                    onChange={(e) => setIsActive(e.target.checked)}
-                                    sx={{
-                                        "& .MuiSwitch-switchBase.Mui-checked": {
-                                            color: "#3F51B5",
-                                        },
-                                        "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                                            backgroundColor: "#3F51B5",
-                                        },
-                                    }}
-                                />
-                            }
-                        />
-                    </Grid>
-
 
                     <Grid item xs={12} md={2} sx={{ textAlign: 'left' }}>
-                        <Typography 
-                            variant="subtitle1" 
-                            sx={{ 
-                                fontWeight: 500, 
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                fontWeight: 500,
                                 color: '#424242',
                                 textAlign: 'left'
                             }}
@@ -403,10 +391,10 @@ export default function BookDetailsManagement() {
                         <Button
                             variant="outlined"
                             component="label"
-                            sx={{ 
-                                width: '100%', 
-                                mb: 2, 
-                                borderColor: '#3F51B5', 
+                            sx={{
+                                width: '100%',
+                                mb: 2,
+                                borderColor: '#3F51B5',
                                 color: '#3F51B5',
                                 '&:hover': {
                                     backgroundColor: '#3F51B5',
@@ -444,10 +432,10 @@ export default function BookDetailsManagement() {
                                         <img
                                             src={url}
                                             alt={`Uploaded ${index}`}
-                                            style={{ 
-                                                height: '100%', 
-                                                width: '100%', 
-                                                objectFit: 'cover' 
+                                            style={{
+                                                height: '100%',
+                                                width: '100%',
+                                                objectFit: 'cover'
                                             }}
                                         />
                                         <Button
@@ -473,6 +461,7 @@ export default function BookDetailsManagement() {
                                 </Grid>
                             ))}
                         </Grid>
+                        {errors.image && <Typography variant="caption" color="error">{errors.image}</Typography>}
                     </Grid>
 
                     {/* Description */}
