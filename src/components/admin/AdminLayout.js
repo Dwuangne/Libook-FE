@@ -2,26 +2,16 @@ import React, { useState } from "react";
 import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import LogoutIcon from "@mui/icons-material/Logout";
-import BookIcon from "@mui/icons-material/AutoStories";
-import MessageIcon from "@mui/icons-material/Chat";
-import VoucherIcon from "@mui/icons-material/Discount";
-import ReportIcon from "@mui/icons-material/Assessment";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from "@mui/icons-material/Menu";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Typography, Menu, MenuItem } from "@mui/material";
+import {
+  Dashboard as DashboardIcon, Logout as LogoutIcon, AutoStories as BookIcon,
+  Chat as MessageIcon, Discount as VoucherIcon, Assessment as ReportIcon,
+  Menu as MenuIcon, PersonOutline as PersonOutlineIcon, AccountCircle as AccountCircleIcon
+} from "@mui/icons-material";
+import {
+  Typography, Menu, MenuItem, AppBar, Box,
+  CssBaseline, Divider, Drawer, List, ListItem, ListItemButton,
+  ListItemIcon, ListItemText
+} from "@mui/material";
 import { toast } from "react-toastify";
 const drawerWidthOpen = 240; // Chiều rộng khi menu mở
 const drawerWidthClosed = 0; // Chiều rộng khi menu đóng
