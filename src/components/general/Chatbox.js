@@ -164,7 +164,9 @@ useEffect(() => {
       });
 
       newConnection.on("NotifyConversationCreatedToCustomer", (conversation) => {
-        handleSelectConversation(conversation.id);
+        setHasMoreMessages(false);
+        setSelectedConversation(conversation.id);
+        setMessages(prevMessages => [...prevMessages, conversation.messages[0]]);
       });
 
       setConnection(newConnection);
