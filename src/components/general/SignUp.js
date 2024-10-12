@@ -95,8 +95,6 @@ const Register = () => {
     <div style={{ marginTop: "0.2rem" }}>
       <div
         style={{
-          // backgroundImage:
-          //     "url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-simple-cartoon-childlike-mother-and-baby-image_11542.jpg')",
           minHeight: "100vh",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
@@ -107,7 +105,7 @@ const Register = () => {
       >
         <Box
           sx={{
-            width: "35%",
+            width: "50%", // Cùng kích thước với form đăng nhập
             animation: "slideSignup 1s ease-in-out",
             "@keyframes slideSignup": {
               from: {
@@ -123,7 +121,7 @@ const Register = () => {
             style={{
               backgroundColor: "#ffffff",
               borderRadius: "10px",
-              padding: "4%",
+              padding: "4%", // Giữ cùng giá trị với form đăng nhập
               margin: "1rem 0",
               boxShadow: "0 2rem 3rem rgba(132, 139, 200, 0.25)",
               border: "3px solid #030ce9",
@@ -133,7 +131,7 @@ const Register = () => {
               <h1
                 style={{ color: "black", fontSize: "2.5em", fontWeight: "700" }}
               >
-                Sign Up{" "}
+                Sign Up
               </h1>
             </div>
             <form onSubmit={handleSubmit}>
@@ -159,8 +157,8 @@ const Register = () => {
                 </Typography>
                 <Input
                   id="username"
-                  type="username"
-                  placeholder="Username"
+                  type="email"
+                  placeholder="Email Address"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disableUnderline
@@ -199,6 +197,7 @@ const Register = () => {
                   }}
                 />
               </FormControl>
+
               <FormControl sx={{ mb: 3 }} fullWidth>
                 <Typography
                   sx={{
@@ -262,7 +261,6 @@ const Register = () => {
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
-                        //sx={{ color: "#030ce9" }}
                         color="primary"
                         onClick={passwordVisibility}
                         edge="end"
@@ -273,6 +271,7 @@ const Register = () => {
                   }
                 />
               </FormControl>
+
               <FormControl sx={{ mb: 3 }} fullWidth>
                 <Typography
                   sx={{
@@ -334,76 +333,78 @@ const Register = () => {
                     },
                   }}
                   endAdornment={
-                    <IconButton
-                      sx={{ color: "#030ce9" }}
-                      //onClick={passwordVisibility}
-                      edge="end"
-                    >
-                      {showPassword ? <EyeOff /> : <Eye />}
-                    </IconButton>
+                    <InputAdornment position="end">
+                      <IconButton
+                        color="primary"
+                        onClick={passwordVisibility}
+                        edge="end"
+                      >
+                        {showPassword ? <EyeOff /> : <Eye />}
+                      </IconButton>
+                    </InputAdornment>
                   }
                 />
+              </FormControl>
 
-                <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                  <Button
-                    variant="contained"
-                    type="submit"
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  sx={{
+                    backgroundColor: "white",
+                    color: "#030ce9",
+                    borderRadius: "30px",
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    width: "15vw",
+                    transition:
+                      "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
+                    border: "2px solid #030ce9",
+                    "&:hover": {
+                      backgroundColor: "#030ce9",
+                      color: "white",
+                      border: "2px solid black",
+                    },
+                  }}
+                >
+                  Create Account
+                </Button>
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    color: "black",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    fontSize: "14px",
+                  }}
+                >
+                  Already have an account?{" "}
+                  <Typography
+                    onClick={() => (
+                      navigate("/signin"),
+                      window.scrollTo({
+                        top: 0,
+                        behavior: "instant",
+                      })
+                    )}
                     sx={{
-                      backgroundColor: "white",
-                      color: "#030ce9",
-                      borderRadius: "30px",
+                      color: "black",
                       fontWeight: "bold",
-                      fontSize: 16,
-                      width: "15vw",
+                      cursor: "pointer",
                       transition:
-                        "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
-                      border: "2px solid #030ce9",
+                        "color 0.3s ease-in-out, scale 0.3s ease-in-out",
+                      paddingLeft: "10px",
                       "&:hover": {
-                        backgroundColor: "#030ce9",
-                        color: "white",
-                        border: "2px solid black",
+                        color: "#030ce9",
+                        scale: "1.08",
                       },
                     }}
                   >
-                    Create Account
-                  </Button>
-                  <div
-                    style={{
-                      marginTop: "1rem",
-                      color: "black",
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      fontsize: "14px",
-                    }}
-                  >
-                    Already have an account?{" "}
-                    <Typography
-                      onClick={() => (
-                        navigate("/signin"),
-                        window.scrollTo({
-                          top: 0,
-                          behavior: "instant",
-                        })
-                      )}
-                      sx={{
-                        color: "black",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                        transition:
-                          "color 0.3s ease-in-out, scale 0.3s ease-in-out",
-                        paddingLeft: "10px",
-                        "&:hover": {
-                          color: "#030ce9",
-                          scale: "1.08",
-                        },
-                      }}
-                    >
-                      Sign in now
-                    </Typography>
-                  </div>
+                    Sign in now
+                  </Typography>
                 </div>
-              </FormControl>
+              </div>
             </form>
           </div>
         </Box>

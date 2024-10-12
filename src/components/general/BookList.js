@@ -260,16 +260,6 @@ const BookList = () => {
         </Button>
       </Box>
 
-      {/* <Box
-        sx={{
-          position: "absolute",
-          left: "20%",
-          top: 0,
-          bottom: 0,
-          width: "2px",
-          backgroundColor: "grey",
-        }}
-      /> */}
       {/* Book List */}
       <Box sx={{ width: "80%", padding: 3, height: "100%" }}>
         {/* Dropdown Menu (Sorting Options) */}

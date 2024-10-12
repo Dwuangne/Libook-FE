@@ -171,7 +171,7 @@ const Header = () => {
         color: "#333", // Đổi màu chữ sang tối hơn để tương phản với nền trắng
       }}
     >
-      <Container maxWidth="lg" paddingLeft="10px">
+      <Container maxWidth="lg">
         <Toolbar
           sx={{
             display: "flex",
@@ -185,7 +185,6 @@ const Header = () => {
               textDecoration: "none",
               display: "flex",
               alignItems: "center",
-              marginLeft: "30px",
             }}
           >
             <img
@@ -193,7 +192,6 @@ const Header = () => {
               alt="LiBook"
               style={{
                 height: "40px",
-                marginRight: "10px",
                 transition: "all 0.3s ease",
               }}
             />
@@ -209,9 +207,7 @@ const Header = () => {
             />
           </Search>
 
-          <Box
-            sx={{ display: "flex", alignItems: "center", marginRight: "15px" }}
-          >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton
               size="large"
               aria-label="show cart items"
@@ -266,6 +262,10 @@ const Header = () => {
                     fontWeight: "bold",
                     textTransform: "none",
                     borderRadius: "20px",
+                    "&:hover": {
+                      backgroundColor: "#030ce9",
+                      color: "white",
+                    },
                   }}
                   onClick={handleSignUp}
                 >
@@ -277,6 +277,11 @@ const Header = () => {
                     color: "black",
                     fontWeight: "bold",
                     textTransform: "none",
+                    borderRadius: "20px",
+                    "&:hover": {
+                      backgroundColor: "#030ce9",
+                      color: "white",
+                    },
                   }}
                   onClick={handleSignIn}
                 >
