@@ -27,12 +27,13 @@ const Footer = () => {
     <div
       style={{
         backgroundColor: "#fafafa", // Màu nền xám cho margin
-        padding: "0 83px", // Padding để tạo khoảng cách với nội dung
+        padding: "0 60px", // Padding để tạo khoảng cách với nội dung
+        borderTop: "1px solid rgba(0,0,0,0.16)",
       }}
     >
       <div
         style={{
-          backgroundColor: "#B2C4F8",
+          backgroundColor: "fafafa",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -273,15 +274,23 @@ const Footer = () => {
                   disableUnderline
                   sx={{
                     backgroundColor: "#F5F5F5",
-                    padding: "0.5rem",
+                    padding: "0.3rem",
                     borderRadius: "4px",
-                    flex: 1,
+                    flex: 1, // Đảm bảo Input chiếm hết không gian
                     marginRight: "0.5rem",
+                    height: "30px",
+                    border: "1px solid gray",
                   }}
                 />
                 <Button
                   variant="contained"
-                  sx={{ backgroundColor: "gray", color: "white" }}
+                  sx={{
+                    backgroundColor: "gray",
+                    color: "white",
+                    height: "30px",
+                    width: "20px", // Thiết lập chiều rộng cố định cho Button
+                    padding: "0", // Giảm padding để giữ kích thước nhỏ
+                  }}
                 >
                   →
                 </Button>
