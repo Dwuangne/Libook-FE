@@ -188,7 +188,9 @@ const BookList = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", backgroundColor: "#fafafa" }}>
+    <Box
+      sx={{ display: "flex", backgroundColor: "#fafafa", marginTop: "62px" }}
+    >
       {/* Sidebar Filter */}
       <Box
         sx={{

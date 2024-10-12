@@ -23,7 +23,7 @@ import ReportManagement from "./components/admin/ReportManagement";
 function App() {
   const location = useLocation();
   return (
-    <div className="App">
+    <div className="App" backgroundColor="grey">
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />

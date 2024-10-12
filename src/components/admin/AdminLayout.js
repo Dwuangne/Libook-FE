@@ -3,14 +3,30 @@ import Logo_RemoveBG from "../../assets/Logo_Libook_RemovedBg.png";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  Dashboard as DashboardIcon, Logout as LogoutIcon, AutoStories as BookIcon,
-  Chat as MessageIcon, Discount as VoucherIcon, Assessment as ReportIcon,
-  Menu as MenuIcon, PersonOutline as PersonOutlineIcon, AccountCircle as AccountCircleIcon
+  Dashboard as DashboardIcon,
+  Logout as LogoutIcon,
+  AutoStories as BookIcon,
+  Chat as MessageIcon,
+  Discount as VoucherIcon,
+  Assessment as ReportIcon,
+  Menu as MenuIcon,
+  PersonOutline as PersonOutlineIcon,
+  AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
 import {
-  Typography, Menu, MenuItem, AppBar, Box,
-  CssBaseline, Divider, Drawer, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText
+  Typography,
+  Menu,
+  MenuItem,
+  AppBar,
+  Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import { toast } from "react-toastify";
 const drawerWidthOpen = 240; // Chiều rộng khi menu mở
@@ -123,14 +139,15 @@ export default function AdminLayout() {
             alignItems: "center",
             justifyContent: "top",
             color: "#3949AB", // Indigo
-            height: "70px",
+            height: "55px",
+            marginTop: "10px",
           }}
         >
           <img
             src={Logo_RemoveBG}
             style={{
-              width: "150px",
-              height: "90px",
+              width: "100px",
+              height: "50px",
             }}
             alt="logo"
           />

@@ -2,7 +2,7 @@ import React from "react";
 import BookList from "./BookList";
 function HomePage() {
   return (
-    <div backgroundColor="grey">
+    <div marginTop="50px">
       <BookList />
     </div>
   );

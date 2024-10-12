@@ -2,29 +2,67 @@ import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Box,
-  Typography,
   Toolbar,
   IconButton,
   InputBase,
   Menu,
   MenuItem,
-  Badge,
   Container,
   ListItemIcon,
-  Avatar, // Thêm Avatar để hiển thị ảnh đại diện
+  Avatar,
+  Button,
 } from "@mui/material";
 import {
   Search as SearchIcon,
   ShoppingCart,
-  AccountCircle,
+  ExitToApp as LogoutIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-
+import { styled, alpha } from "@mui/material/styles";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import logoImg from "../../assets/logo_1.png";
+import logoImg from "../../assets/Logo_Libook_RemovedBg.png";
 import { toast } from "react-toastify";
-import { GetAllBooksApi } from "../../api/BookApi";
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(3),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  border: "1px solid #ccc", // Viền
+  borderRadius: "25px", // Bo tròn hơn
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "50ch", // Kéo dài trường tìm kiếm
+    },
+  },
+}));
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -91,29 +129,6 @@ const Header = () => {
   const [Books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const bookRes = await Promise.all(
-  //       GetAllBooksApi({
-  //         filter: nameFilter,
-  //       })
-  //     );
-  //     const bookData = bookRes?.data?.data || [];
-
-  //     setBooks(bookData);
-  //     console.log(bookData);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-  // useEffect(() => {
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 2000);
-  //   fetchData();
-  // }, [nameFilter]);
-
   const handleNameKeyChange = (id) => {
     setNameFilter((prev) => (prev === id ? null : id));
     setCurrentPage(1);
@@ -146,147 +161,133 @@ const Header = () => {
   }
 
   return (
-    <div>
-      <AppBar
-        position="sticky"
-        zIndex={1000}
-        sx={{
-          backgroundColor: "#B2C4F8",
-          transition: "all 0.3s ease",
-          boxShadow: scrolled ? "0 2px 4px rgba(0,0,0,0.2)" : "none",
-          height: scrolled ? "60px" : "70px",
-        }}
-      >
-        <Container maxWidth="lg" maxHeight="lg">
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* Logo */}
-            <Link to="/" style={{ textDecoration: "none" }}>
-              <img
-                src={logoImg}
-                alt="LiBook"
-                style={{
-                  height: scrolled ? "40px" : "60px",
-                  transition: "all 0.3s ease",
-                }}
-              />
-            </Link>
-
-            {/* Search Bar */}
-            <div
+    <AppBar
+      position="fixed"
+      sx={{
+        backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "#FAFAFA",
+        transition: "all 0.3s ease",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        height: "64px",
+        color: "#333", // Đổi màu chữ sang tối hơn để tương phản với nền trắng
+      }}
+    >
+      <Container maxWidth="lg" paddingLeft="10px">
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <Link
+            to="/"
+            style={{
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              marginLeft: "30px",
+            }}
+          >
+            <img
+              src={logoImg}
+              alt="LiBook"
               style={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "white",
-                borderRadius: "10px",
-                padding: scrolled ? "0.1rem 0.2rem" : "0.2rem 0.4rem",
-                flex: 1,
-                marginLeft: "1rem",
-                marginRight: "1rem",
-                maxWidth: scrolled ? "200px" : "300px",
-                height: scrolled ? "20px" : "30px",
+                height: "40px",
+                marginRight: "10px",
                 transition: "all 0.3s ease",
               }}
+            />
+          </Link>
+
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search book's name ..."
+              inputProps={{ "aria-label": "search" }}
+            />
+          </Search>
+
+          <Box
+            sx={{ display: "flex", alignItems: "center", marginRight: "15px" }}
+          >
+            <IconButton
+              size="large"
+              aria-label="show cart items"
+              color="inherit"
+              component={Link}
+              to="/cart"
             >
-              <InputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-                sx={{ flex: 1 }}
-              />
-              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-                <SearchIcon />
-              </IconButton>
-            </div>
+              <ShoppingCart />
+            </IconButton>
 
-            {/* Profile and Cart */}
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {/* Cart Icon */}
-              <IconButton
-                size="large"
-                aria-label="show cart items"
-                color="black"
-                component={Link}
-                to="/cart"
-              >
-                <Badge>
-                  <ShoppingCart />
-                </Badge>
-              </IconButton>
-              {/* Profile Dropdown */}
+            {isLoggedIn ? (
+              <>
+                <Button
+                  onClick={handleMenu}
+                  color="black"
+                  startIcon={
+                    <Avatar
+                      src={avatarUrl}
+                      sx={{ width: 32, height: 32, backgroundColor: "black" }}
+                    />
+                  }
+                >
+                  {displayUsername}
+                </Button>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem onClick={handleProfile}>
+                    <ListItemIcon>
+                      <PersonIcon fontSize="small" />
+                    </ListItemIcon>
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button
+                  sx={{
+                    color: "black",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    borderRadius: "20px",
+                  }}
+                  onClick={handleSignUp}
+                >
+                  Sign Up
+                </Button>
 
-              {isLoggedIn ? (
-                <Box sx={{ display: "flex", alignItems: "right" }}>
-                  <ListItemIcon
-                    sx={{
-                      justifyContent: "center",
-                      fontSize: 60,
-                      color: "#3949AB",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleClick}
-                  >
-                    <Typography
-                      sx={{
-                        color: "black",
-                        textDecoration: "underline",
-                        textUnderlineOffset: 2,
-                      }}
-                    >
-                      {displayUsername}
-                    </Typography>
-                  </ListItemIcon>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                      "aria-labelledby": "basic-button",
-                    }}
-                  >
-                    <MenuItem onClick={handleProfile}>
-                      <ListItemIcon>
-                        <AccountCircle fontSize="small" />
-                      </ListItemIcon>
-                      Profile
-                    </MenuItem>
-                    <MenuItem onClick={handleLogout}>
-                      <ListItemIcon>
-                        <LogoutIcon fontSize="small" />
-                      </ListItemIcon>
-                      Logout
-                    </MenuItem>
-                  </Menu>
-                </Box>
-              ) : (
-                <Box sx={{ display: "flex", alignItems: "right" }}>
-                  <ListItemIcon
-                    sx={{
-                      justifyContent: "center",
-                      fontSize: 60,
-                      color: "#3949AB",
-                      cursor: "pointer",
-                    }}
-                    onClick={handleClick}
-                  >
-                    <AccountCircle />
-                  </ListItemIcon>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                      "aria-labelledby": "basic-button",
-                    }}
-                  >
-                    <MenuItem onClick={handleSignIn}>Log In</MenuItem>
-                    <MenuItem onClick={handleSignUp}>Sign Up</MenuItem>
-                  </Menu>
-                </Box>
-              )}
-            </div>
-          </Toolbar>
-        </Container>
-      </AppBar>
-    </div>
+                <Button
+                  sx={{
+                    color: "black",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                  }}
+                  onClick={handleSignIn}
+                >
+                  Log In
+                </Button>
+              </>
+            )}
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 
