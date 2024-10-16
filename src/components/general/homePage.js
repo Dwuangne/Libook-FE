@@ -44,6 +44,7 @@ const HomePage = () => {
           booksByCategory[category.id] = bookRes?.data?.data || [];
         }
         setBooksByCategory(booksByCategory);
+        console.log(booksByCategory);
       } catch (error) {
         console.error(error);
       } finally {
@@ -80,48 +81,12 @@ const HomePage = () => {
   return (
     <div>
       <ImageSlider images={images} />
-      <Box mt={4} paddingTop={10} backgroundColor="#f0f0f0">
+      <Box paddingTop={5} backgroundColor="#f0f0f0">
         {loading ? (
           <CircularProgress />
         ) : (
           categories.map((category) => (
-            // <Box key={category.id} mb={4} padding="0 110px">
-            //   <Typography variant="h5" gutterBottom>
-            //     {category.name}
-            //   </Typography>
-            //   <Divider />
-            //   <Grid container spacing={2} mt={2}>
-            //     {booksByCategory[category.id]?.map((book) => (
-            //       <Grid item xs={12} sm={6} md={3} key={book.id}>
-            //         <Card onClick={() => handleBookClick(book.name)}>
-            //           <CardMedia
-            //             component="img"
-            //             height="140"
-            //             image={
-            //               book.imageUrl || "https://via.placeholder.com/150"
-            //             }
-            //             alt={book.name}
-            //           />
-            //           <CardContent>
-            //             <Typography variant="subtitle1" noWrap>
-            //               {book.name}
-            //             </Typography>
-            //             <Typography variant="body2" color="text.secondary">
-            //               {book.authorName}
-            //             </Typography>
-            //             <Typography variant="body2" color="text.secondary">
-            //               {book.rating} ★
-            //             </Typography>
-            //             <Typography variant="body2" color="text.primary">
-            //               {formatCurrency(book.price)}
-            //             </Typography>
-            //           </CardContent>
-            //         </Card>
-            //       </Grid>
-            //     ))}
-            //   </Grid>
-            // </Box>
-            <Box key={category.id} mb={4} padding="0 150px">
+            <Box key={category.id} padding="0 150px">
               <Typography
                 variant="h3"
                 gutterBottom
@@ -137,7 +102,7 @@ const HomePage = () => {
                   gap: 2,
                   mt: 2,
                   overflowX: "auto", // Allow horizontal scrolling
-                  paddingBottom: "10px", // Add some padding at the bottom
+                  paddingBottom: "20px", // Add some padding at the bottom
                 }}
               >
                 {booksByCategory[category.id]?.map((book) => (

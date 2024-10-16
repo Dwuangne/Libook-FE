@@ -81,7 +81,7 @@ const Login = () => {
     // Lưu token và thông tin người dùng vào localStorage
     localStorage.setItem("accessToken", jwtToken);
     localStorage.setItem("username", username);
-
+    localStorage.setItem("role", role);
     // Hiển thị thông báo thành công
     toast.success("Login successfully", { autoClose: 1500 });
 

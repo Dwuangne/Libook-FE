@@ -28,7 +28,6 @@ const Register = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("form subbmited ", username, password, confirmPassword);
 
     if (confirmPassword !== password) {
       toast.error("Confirm password must be the same as password", {
