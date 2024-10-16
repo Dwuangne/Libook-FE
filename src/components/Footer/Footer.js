@@ -26,28 +26,27 @@ const Footer = () => {
   return (
     <div
       style={{
-        backgroundColor: "#fafafa", // Màu nền xám cho margin
-        padding: "0 60px", // Padding để tạo khoảng cách với nội dung
-        borderTop: "1px solid rgba(0,0,0,0.16)",
+        backgroundColor: "#f0f0f0", // Màu nền xám cho margin
+        padding: "90px 90px 0px 90px", // Padding để tạo khoảng cách với nội dung
       }}
     >
       <div
         style={{
-          backgroundColor: "fafafa",
+          backgroundColor: "white",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           // boxShadow: "1px 1px 3px rgba(0,0,0.16)",
-          padding: "1rem 0",
-          borderRadius: "5px",
+          padding: "30px 0 10px 0",
+          borderRadius: "8px",
         }}
       >
         <Container maxWidth="lg">
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
               gap: "1rem",
             }}
           >
@@ -59,13 +58,14 @@ const Footer = () => {
                 flexDirection: "column",
                 textAlign: "left",
                 gap: "0.3rem",
-                boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
+                borderRight: "2px solid rgba(0, 0, 0, 0.1)", // Thêm border chỉ bên phải
+                paddingRight: "1rem", // Thêm padding bên phải để tránh nội dung bị dính vào viền
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 LiBook
               </Typography>
-              <Typography variant="body2" sx={{ marginTop: "1rem" }}>
+              <Typography variant="body1" sx={{ marginTop: "1rem" }}>
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit.
                 Dolorum atque vero in. Dolores similique ducimus error aperiam.
                 Nam, debitis at!
@@ -81,15 +81,16 @@ const Footer = () => {
                 flexDirection: "column",
                 textAlign: "left",
                 gap: "0.3rem",
-                boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
+                borderRight: "2px solid rgba(0, 0, 0, 0.1)", // Thêm border chỉ bên phải
+                paddingRight: "1rem", // Thêm padding bên phải để tránh nội dung bị dính vào viền
               }}
             >
-              <Typography variant="h6" sx={{ mb: 0.25, fontWeight: "bold" }}>
+              <Typography variant="h5" sx={{ mb: 0.25, fontWeight: "bold" }}>
                 Quick Links
               </Typography>
 
               <Link
-                to="/introduction"
+                to="/"
                 style={{ textDecoration: "none" }}
                 onClick={() => window.scrollTo(0, 0)}
               >
@@ -99,6 +100,7 @@ const Footer = () => {
                     color: "black",
                     cursor: "pointer",
                     fontWeight: "500",
+                    paddingTop: "10px",
                     transition:
                       "color 0.2s ease-in-out, scale 0.3s ease-in-out",
                     fontSize: "1rem",
@@ -167,11 +169,12 @@ const Footer = () => {
                 flexDirection: "column",
                 textAlign: "left",
                 gap: "0.3rem",
-                boxShadow: "0.2px 0.15px 0.15px rgba(0,0,0.16)",
+                borderRight: "2px solid rgba(0, 0, 0, 0.1)", // Thêm border chỉ bên phải
+                paddingRight: "1rem", // Thêm padding bên phải để tránh nội dung bị dính vào viền
               }}
             >
               <Typography
-                variant="h6"
+                variant="h5"
                 sx={{ mb: 0.25, fontWeight: "bold", gap: "1rem" }}
               >
                 Support
@@ -188,6 +191,7 @@ const Footer = () => {
                     color: "black",
                     cursor: "pointer",
                     fontWeight: "500",
+                    paddingTop: "10px",
                     transition:
                       "color 0.2s ease-in-out, scale 0.3s ease-in-out",
                     fontSize: "1rem",
@@ -255,7 +259,7 @@ const Footer = () => {
                 textAlign: "left",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Newsletter
               </Typography>
               <Typography sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
@@ -309,21 +313,21 @@ const Footer = () => {
               flexWrap: "wrap",
             }}
           >
-            <Typography variant="body2">
+            <Typography variant="body1">
               Privacy Policy &nbsp; | &nbsp; Support
             </Typography>
-            <Typography variant="body2">
+            <Typography variant="body1">
               © 2024 - LiBook. All rights reserved
             </Typography>
             <div>
               <IconButton color="inherit" aria-label="Twitter">
-                <TwitterIcon />
+                <TwitterIcon fontSize="large" />
               </IconButton>
               <IconButton color="inherit" aria-label="Instagram">
-                <InstagramIcon />
+                <InstagramIcon fontSize="large" />
               </IconButton>
               <IconButton color="inherit" aria-label="Facebook">
-                <FacebookIcon />
+                <FacebookIcon fontSize="large" />
               </IconButton>
             </div>
           </div>

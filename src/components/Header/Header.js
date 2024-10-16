@@ -123,6 +123,7 @@ const Header = () => {
   const fullUsername = localStorage.getItem("username") || "User";
   const displayUsername = truncateUsername(fullUsername);
   const avatarUrl = localStorage.getItem("avatarUrl") || ""; // Giả sử bạn lưu avatar
+  const role = localStorage.getItem("role") || "";
   const { pathname } = useLocation();
   const [nameFilter, setNameFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,14 +162,153 @@ const Header = () => {
   }
 
   return (
+    // <AppBar
+    //   position="fixed"
+    //   sx={{
+    //     backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "#FAFAFA",
+    //     transition: "all 0.3s ease",
+    //     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    //     height: "64px",
+    //     color: "#333", // Đổi màu chữ sang tối hơn để tương phản với nền trắng
+    //   }}
+    // >
+    //   <Container maxWidth="lg">
+    //     <Toolbar
+    //       sx={{
+    //         display: "flex",
+    //         justifyContent: "space-between",
+    //         height: "100%",
+    //       }}
+    //     >
+    //       <Link
+    //         to="/"
+    //         onClick={() =>
+    //           window.scrollTo({
+    //             top: 0,
+    //             behavior: "smooth",
+    //           })
+    //         }
+    //         style={{
+    //           textDecoration: "none",
+    //           display: "flex",
+    //           alignItems: "center",
+    //         }}
+    //       >
+    //         <img
+    //           src={logoImg}
+    //           alt="LiBook"
+    //           style={{
+    //             height: "40px",
+    //             transition: "all 0.3s ease",
+    //           }}
+    //         />
+    //       </Link>
+
+    //       <Search>
+    //         <SearchIconWrapper>
+    //           <SearchIcon />
+    //         </SearchIconWrapper>
+    //         <StyledInputBase
+    //           placeholder="Search book's name ..."
+    //           inputProps={{ "aria-label": "search" }}
+    //         />
+    //       </Search>
+
+    //       <Box sx={{ display: "flex", alignItems: "center" }}>
+    //         <IconButton
+    //           size="large"
+    //           aria-label="show cart items"
+    //           color="inherit"
+    //           component={Link}
+    //           to="/cart"
+    //         >
+    //           <ShoppingCart />
+    //         </IconButton>
+
+    //         {isLoggedIn ? (
+    //           <>
+    //             <Button
+    //               onClick={handleMenu}
+    //               color="black"
+    //               startIcon={
+    //                 <Avatar
+    //                   src={avatarUrl}
+    //                   sx={{ width: 32, height: 32, backgroundColor: "black" }}
+    //                 />
+    //               }
+    //             >
+    //               {displayUsername}
+    //             </Button>
+    //             <Menu
+    //               anchorEl={anchorEl}
+    //               open={open}
+    //               onClose={handleClose}
+    //               MenuListProps={{
+    //                 "aria-labelledby": "basic-button",
+    //               }}
+    //             >
+    //               <MenuItem onClick={handleProfile}>
+    //                 <ListItemIcon>
+    //                   <PersonIcon fontSize="small" />
+    //                 </ListItemIcon>
+    //                 Profile
+    //               </MenuItem>
+    //               <MenuItem onClick={handleLogout}>
+    //                 <ListItemIcon>
+    //                   <LogoutIcon fontSize="small" />
+    //                 </ListItemIcon>
+    //                 Logout
+    //               </MenuItem>
+    //             </Menu>
+    //           </>
+    //         ) : (
+    //           <>
+    //             <Button
+    //               sx={{
+    //                 color: "black",
+    //                 fontWeight: "bold",
+    //                 textTransform: "none",
+    //                 borderRadius: "20px",
+    //                 "&:hover": {
+    //                   backgroundColor: "#030ce9",
+    //                   color: "white",
+    //                 },
+    //               }}
+    //               onClick={handleSignUp}
+    //             >
+    //               Sign Up
+    //             </Button>
+
+    //             <Button
+    //               sx={{
+    //                 color: "black",
+    //                 fontWeight: "bold",
+    //                 textTransform: "none",
+    //                 borderRadius: "20px",
+    //                 "&:hover": {
+    //                   backgroundColor: "#030ce9",
+    //                   color: "white",
+    //                 },
+    //               }}
+    //               onClick={handleSignIn}
+    //             >
+    //               Log In
+    //             </Button>
+    //           </>
+    //         )}
+    //       </Box>
+    //     </Toolbar>
+    //   </Container>
+    // </AppBar>
+
     <AppBar
       position="fixed"
       sx={{
         backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "#FAFAFA",
         transition: "all 0.3s ease",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        height: "64px",
-        color: "#333", // Đổi màu chữ sang tối hơn để tương phản với nền trắng
+        boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+        height: "80px", // Tăng chiều cao của AppBar
+        color: "#333",
       }}
     >
       <Container maxWidth="lg">
@@ -177,10 +317,13 @@ const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             height: "100%",
+            paddingTop: "2px",
+            paddingBottom: "8px",
           }}
         >
           <Link
             to="/"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             style={{
               textDecoration: "none",
               display: "flex",
@@ -191,19 +334,20 @@ const Header = () => {
               src={logoImg}
               alt="LiBook"
               style={{
-                height: "40px",
+                height: "60px", // Tăng kích thước logo
                 transition: "all 0.3s ease",
               }}
             />
           </Link>
 
-          <Search>
+          <Search sx={{ flexGrow: 1, maxWidth: "500px", mx: 2 }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search book's name ..."
               inputProps={{ "aria-label": "search" }}
+              sx={{ width: "100%" }}
             />
           </Search>
 
@@ -214,21 +358,23 @@ const Header = () => {
               color="inherit"
               component={Link}
               to="/cart"
+              sx={{ mr: 2 }}
             >
-              <ShoppingCart />
+              <ShoppingCart sx={{ fontSize: 28 }} />
             </IconButton>
 
             {isLoggedIn ? (
               <>
                 <Button
                   onClick={handleMenu}
-                  color="black"
+                  color="inherit"
                   startIcon={
                     <Avatar
                       src={avatarUrl}
-                      sx={{ width: 32, height: 32, backgroundColor: "black" }}
+                      sx={{ width: 40, height: 40, backgroundColor: "black" }}
                     />
                   }
+                  sx={{ fontSize: "1.1rem" }}
                 >
                   {displayUsername}
                 </Button>
@@ -262,6 +408,8 @@ const Header = () => {
                     fontWeight: "bold",
                     textTransform: "none",
                     borderRadius: "20px",
+                    padding: "8px 16px",
+                    fontSize: "1rem",
                     "&:hover": {
                       backgroundColor: "#030ce9",
                       color: "white",
@@ -278,6 +426,9 @@ const Header = () => {
                     fontWeight: "bold",
                     textTransform: "none",
                     borderRadius: "20px",
+                    padding: "8px 16px",
+                    fontSize: "1rem",
+                    ml: 2,
                     "&:hover": {
                       backgroundColor: "#030ce9",
                       color: "white",
