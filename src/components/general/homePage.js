@@ -11,6 +11,7 @@ import {
   Typography,
   CircularProgress,
   Divider,
+  Button,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import image1 from "../../assets/banner1.png";
@@ -24,25 +25,31 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [booksByCategory, setBooksByCategory] = useState({});
+  const [showElements, setShowElements] = useState(false);
 
   useEffect(() => {
-    // Lấy danh sách danh mục và sách theo danh mục
+    // Fetch categories and books by category
     const fetchData = async () => {
       setLoading(true);
       try {
         const categoryRes = await GetCategoryApi();
         const categories = categoryRes?.data?.data || [];
-        setCategories(categories);
-
+        const validCategories = [];
         const booksByCategory = {};
+
         for (const category of categories) {
           const bookRes = await GetAllBooksApi({
             categoryID: category.id,
             pageIndex: 0,
-            pageSize: 8, // Giới hạn số sách mỗi danh mục
+            pageSize: 6, // Limit number of books per category
           });
-          booksByCategory[category.id] = bookRes?.data?.data || [];
+          const books = bookRes?.data?.data || [];
+          if (books.length > 0) {
+            booksByCategory[category.id] = books;
+            validCategories.push(category); // Only keep categories with books
+          }
         }
+        setCategories(validCategories);
         setBooksByCategory(booksByCategory);
         console.log(booksByCategory);
       } catch (error) {
@@ -80,140 +87,168 @@ const HomePage = () => {
 
   return (
     <div>
-      <ImageSlider images={images} />
-      <Box paddingTop={5} backgroundColor="#f0f0f0">
+      <Box
+        backgroundColor="#f0f0f0"
+        paddingTop={10}
+        sx={{ display: "flex", flexDirection: "column", gap: "40px" }} // Added flexbox and gap
+      >
+        <ImageSlider images={images} />
         {loading ? (
-          <CircularProgress />
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <CircularProgress />
+          </Box>
         ) : (
           categories.map((category) => (
-            <Box key={category.id} padding="0 150px">
+            <Box
+              key={category.id}
+              margin="0 100px"
+              sx={{
+                border: "2px solid #ddd",
+                borderRadius: "10px",
+                backgroundColor: "#fff",
+              }}
+            >
               <Typography
                 variant="h3"
-                gutterBottom
                 textAlign="left"
                 fontWeight="bold"
+                paddingTop={2}
+                paddingLeft={2}
               >
                 {category.name}
               </Typography>
-              <Divider />
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: 2,
-                  mt: 2,
-                  overflowX: "auto", // Allow horizontal scrolling
-                  paddingBottom: "20px", // Add some padding at the bottom
-                }}
-              >
+              <Divider variant="middle" />
+              <Grid container spacing={2} marginTop={2} paddingLeft={2}>
                 {booksByCategory[category.id]?.map((book) => (
-                  <Card
-                    key={book.id}
-                    sx={{
-                      boxShadow: "none",
-                      height: "300px",
-                      width: "200px",
-                      flex: "0 0 auto", // Prevent items from shrinking
-                      "&:hover": {
-                        boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)", // Shadow effect on hover
-                        transform: "translateY(-5px)", // Slight upward motion on hover
-                        transition: "all 0.3s ease", // Smooth transition effect
-                      },
-                    }}
-                    onClick={() => handleBookClick(book.name)}
-                  >
-                    <Box
+                  <Grid item xs={6} sm={4} md={3} lg={2} key={book.id}>
+                    <Card
                       sx={{
-                        position: "relative",
-                        height: "180px",
-                        display: "flex",
-                        justifyContent: "center",
+                        boxShadow: "none",
+                        height: "300px",
+                        width: "200px",
+                        flex: "0 0 auto",
+                        "&:hover": {
+                          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+                          transform: "translateY(-5px)",
+                          transition: "all 0.3s ease",
+                        },
                       }}
+                      onClick={() => handleBookClick(book.name)}
                     >
-                      <CardMedia
-                        component="img"
-                        image={book.imageUrl ? book.imageUrl : replaceImg}
-                        alt={book.name}
-                        sx={{
-                          maxHeight: "100%",
-                          maxWidth: "100%",
-                          objectFit: "contain",
-                        }}
-                      />
-                    </Box>
-                    <CardContent
-                      sx={{
-                        paddingLeft: 1.5,
-                        paddingRight: 1,
-                        flexGrow: 1,
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Typography
-                        variant="h7"
-                        sx={{
-                          textAlign: "left",
-                          width: "100%",
-                          height: "3rem",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          lineHeight: "1.5rem",
-                          whiteSpace: "normal",
-                        }}
-                      >
-                        {book.name}
-                      </Typography>
-
                       <Box
                         sx={{
+                          position: "relative",
+                          height: "180px",
                           display: "flex",
-                          justifyContent: "left",
-                          alignItems: "center",
-                          marginTop: 1,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          image={book.imageUrl ? book.imageUrl : replaceImg}
+                          alt={book.name}
+                          sx={{
+                            maxHeight: "100%",
+                            maxWidth: "100%",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </Box>
+                      <CardContent
+                        sx={{
+                          paddingLeft: 1.5,
+                          paddingRight: 1,
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
                         <Typography
                           variant="h7"
-                          color="error"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          {formatCurrency(
-                            book.price -
-                              (book.price * book.precentDiscount) / 100
-                          )}
-                        </Typography>
-
-                        {book.precentDiscount > 0 && (
-                          <Box
-                            sx={{
-                              backgroundColor: "red",
-                              color: "white",
-                              marginLeft: "10px",
-                              padding: "2px 6px",
-                              borderRadius: "4px",
-                              fontWeight: 500,
-                            }}
-                          >
-                            -{book.precentDiscount}%
-                          </Box>
-                        )}
-                      </Box>
-
-                      {book.precentDiscount > 0 && (
-                        <Typography
-                          variant="body2"
                           sx={{
-                            textDecoration: "line-through",
-                            color: "gray",
                             textAlign: "left",
+                            height: "3rem",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            lineHeight: "1.5rem",
+                            whiteSpace: "normal",
                           }}
                         >
-                          {formatCurrency(book.price)}
+                          {book.name}
                         </Typography>
-                      )}
-                    </CardContent>
-                  </Card>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "left",
+                            alignItems: "center",
+                            marginTop: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="h7"
+                            color="error"
+                            sx={{ fontWeight: "bold" }}
+                          >
+                            {formatCurrency(
+                              book.price -
+                                (book.price * book.precentDiscount) / 100
+                            )}
+                          </Typography>
+
+                          {book.precentDiscount > 0 && (
+                            <Box
+                              sx={{
+                                backgroundColor: "red",
+                                color: "white",
+                                marginLeft: "10px",
+                                padding: "2px 6px",
+                                borderRadius: "4px",
+                                fontWeight: 500,
+                              }}
+                            >
+                              -{book.precentDiscount}%
+                            </Box>
+                          )}
+                        </Box>
+
+                        {book.precentDiscount > 0 && (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              textDecoration: "line-through",
+                              color: "gray",
+                              textAlign: "left",
+                            }}
+                          >
+                            {formatCurrency(book.price)}
+                          </Typography>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 ))}
+              </Grid>
+
+              {/* Add the View More button below the book grid */}
+              <Box textAlign="center" marginTop={3} paddingBottom="20px">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "white",
+                    color: "red",
+                    borderRadius: "30px",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    width: "10vw",
+                    marginBottom: "1rem",
+                    transition:
+                      "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
+                    border: "2px solid red ",
+                  }}
+                  onClick={() => navigate(`/booklist/${category.name}`)}
+                >
+                  View More
+                </Button>
               </Box>
             </Box>
           ))
