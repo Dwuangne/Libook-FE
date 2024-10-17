@@ -290,7 +290,7 @@ const BookList = () => {
             <CircularProgress />
           ) : (
             Books.map((book) => (
-              <Grid item xs={6} sm={4} md={2.4} key={book.id}>
+              <Grid item={true.toString()} xs={6} sm={4} md={2.4} key={book.id}>
                 <Card
                   sx={{
                     boxShadow: "none",
