@@ -69,12 +69,20 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false); // State theo dõi scroll
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // useEffect(() => {
+  //   // Kiểm tra nếu trang chưa được tải lại
+  //   if (pathname === "/") {
+  //     // Kiểm tra nếu là trang homepage
+  //     if (!sessionStorage.getItem("hasReloaded")) {
+  //       sessionStorage.setItem("hasReloaded", "true");
+  //       window.location.reload();
+  //     }
+  //   }
+  // }, []);
 
   const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -124,7 +132,7 @@ const Header = () => {
   const displayUsername = truncateUsername(fullUsername);
   const avatarUrl = localStorage.getItem("avatarUrl") || ""; // Giả sử bạn lưu avatar
   const role = localStorage.getItem("role") || "";
-  const { pathname } = useLocation();
+
   const [nameFilter, setNameFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [Books, setBooks] = useState([]);
@@ -162,145 +170,6 @@ const Header = () => {
   }
 
   return (
-    // <AppBar
-    //   position="fixed"
-    //   sx={{
-    //     backgroundColor: scrolled ? "rgba(255, 255, 255, 0.95)" : "#FAFAFA",
-    //     transition: "all 0.3s ease",
-    //     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    //     height: "64px",
-    //     color: "#333", // Đổi màu chữ sang tối hơn để tương phản với nền trắng
-    //   }}
-    // >
-    //   <Container maxWidth="lg">
-    //     <Toolbar
-    //       sx={{
-    //         display: "flex",
-    //         justifyContent: "space-between",
-    //         height: "100%",
-    //       }}
-    //     >
-    //       <Link
-    //         to="/"
-    //         onClick={() =>
-    //           window.scrollTo({
-    //             top: 0,
-    //             behavior: "smooth",
-    //           })
-    //         }
-    //         style={{
-    //           textDecoration: "none",
-    //           display: "flex",
-    //           alignItems: "center",
-    //         }}
-    //       >
-    //         <img
-    //           src={logoImg}
-    //           alt="LiBook"
-    //           style={{
-    //             height: "40px",
-    //             transition: "all 0.3s ease",
-    //           }}
-    //         />
-    //       </Link>
-
-    //       <Search>
-    //         <SearchIconWrapper>
-    //           <SearchIcon />
-    //         </SearchIconWrapper>
-    //         <StyledInputBase
-    //           placeholder="Search book's name ..."
-    //           inputProps={{ "aria-label": "search" }}
-    //         />
-    //       </Search>
-
-    //       <Box sx={{ display: "flex", alignItems: "center" }}>
-    //         <IconButton
-    //           size="large"
-    //           aria-label="show cart items"
-    //           color="inherit"
-    //           component={Link}
-    //           to="/cart"
-    //         >
-    //           <ShoppingCart />
-    //         </IconButton>
-
-    //         {isLoggedIn ? (
-    //           <>
-    //             <Button
-    //               onClick={handleMenu}
-    //               color="black"
-    //               startIcon={
-    //                 <Avatar
-    //                   src={avatarUrl}
-    //                   sx={{ width: 32, height: 32, backgroundColor: "black" }}
-    //                 />
-    //               }
-    //             >
-    //               {displayUsername}
-    //             </Button>
-    //             <Menu
-    //               anchorEl={anchorEl}
-    //               open={open}
-    //               onClose={handleClose}
-    //               MenuListProps={{
-    //                 "aria-labelledby": "basic-button",
-    //               }}
-    //             >
-    //               <MenuItem onClick={handleProfile}>
-    //                 <ListItemIcon>
-    //                   <PersonIcon fontSize="small" />
-    //                 </ListItemIcon>
-    //                 Profile
-    //               </MenuItem>
-    //               <MenuItem onClick={handleLogout}>
-    //                 <ListItemIcon>
-    //                   <LogoutIcon fontSize="small" />
-    //                 </ListItemIcon>
-    //                 Logout
-    //               </MenuItem>
-    //             </Menu>
-    //           </>
-    //         ) : (
-    //           <>
-    //             <Button
-    //               sx={{
-    //                 color: "black",
-    //                 fontWeight: "bold",
-    //                 textTransform: "none",
-    //                 borderRadius: "20px",
-    //                 "&:hover": {
-    //                   backgroundColor: "#030ce9",
-    //                   color: "white",
-    //                 },
-    //               }}
-    //               onClick={handleSignUp}
-    //             >
-    //               Sign Up
-    //             </Button>
-
-    //             <Button
-    //               sx={{
-    //                 color: "black",
-    //                 fontWeight: "bold",
-    //                 textTransform: "none",
-    //                 borderRadius: "20px",
-    //                 "&:hover": {
-    //                   backgroundColor: "#030ce9",
-    //                   color: "white",
-    //                 },
-    //               }}
-    //               onClick={handleSignIn}
-    //             >
-    //               Log In
-    //             </Button>
-    //           </>
-    //         )}
-    //       </Box>
-    //     </Toolbar>
-    //   </Container>
-    // </AppBar>
-
     <AppBar
       position="fixed"
       sx={{

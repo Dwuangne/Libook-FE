@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { signUpApi } from "../../api/UserApi";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 //UI
 import Button from "@mui/material/Button";
@@ -25,6 +26,23 @@ const Register = () => {
   const passwordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  useEffect(() => {
+    const jwtToken = localStorage.getItem("accessToken");
+
+    if (jwtToken) {
+      const decodedAccessToken = jwtDecode(jwtToken);
+      const roleHasLoggined =
+        decodedAccessToken[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ];
+      if (roleHasLoggined === "Admin") {
+        navigate("/admin");
+      } else if (roleHasLoggined === "Customer") {
+        navigate("/");
+      }
+    }
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();

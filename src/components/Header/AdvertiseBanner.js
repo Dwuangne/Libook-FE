@@ -5,7 +5,7 @@ import { Card, CardMedia } from "@mui/material";
 const ImageSlider = ({ images }) => {
   return (
     <div>
-      <Carousel
+      {/* <Carousel
         autoPlay={true}
         interval={3000}
         animation="slide"
@@ -13,8 +13,8 @@ const ImageSlider = ({ images }) => {
         navButtonsAlwaysVisible={true}
         indicatorContainerProps={{
           style: {
-            marginTop: "100px",
             textAlign: "center",
+            marginTop: "0",
           },
         }}
         indicatorIconButtonProps={{
@@ -35,6 +35,37 @@ const ImageSlider = ({ images }) => {
             margin: "0 6px", // Khoảng cách giữa các chấm
           },
         }}
+      > */}
+      <Carousel
+        autoPlay={true}
+        interval={3000}
+        animation="slide"
+        indicators={true}
+        navButtonsAlwaysVisible={true}
+        indicatorContainerProps={{
+          style: {
+            textAlign: "center",
+            marginTop: "0",
+          },
+        }}
+        indicatorIconButtonProps={{
+          style: {
+            width: "10px",
+            height: "10px",
+            borderRadius: "50%",
+            backgroundColor: "grey", // Màu khi không được chọn
+            margin: "0 6px",
+          },
+        }}
+        activeIndicatorIconButtonProps={{
+          style: {
+            width: "24px", // Tăng chiều rộng khi được chọn
+            height: "10px",
+            borderRadius: "5px", // Bo góc nhẹ hơn khi được chọn
+            backgroundColor: "red", // Màu đỏ khi được chọn
+            margin: "0 6px",
+          },
+        }}
       >
         {images.map((image, index) => (
           <Card
@@ -43,7 +74,6 @@ const ImageSlider = ({ images }) => {
               maxWidth: "100%",
               margin: "auto",
               boxShadow: "none",
-              marginTop: "100px",
             }}
           >
             <CardMedia
