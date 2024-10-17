@@ -36,3 +36,26 @@ export const GetAllBooksApi = (params) => {
 export const GetBookByIdApi = (bookId) => {
   return axiosJWT.get(`${URL_BOOK}/${bookId}`);
 };
+
+export const UpdateBookApi = (
+  bookId,
+  name,
+  description,
+  price,
+  precentDiscount,
+  remain,
+  authorId,
+  categoryId,
+  supplierId,
+) => {
+  return axiosJWT.put(`${URL_BOOK}/${bookId}`, {
+    name: name,
+    description: description,
+    price: price,
+    precentDiscount: precentDiscount,
+    remain: remain,
+    authorId: authorId,
+    categoryId: categoryId, 
+    supplierId: supplierId, 
+  });
+};

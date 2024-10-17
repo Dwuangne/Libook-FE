@@ -54,7 +54,10 @@ function App() {
             <Route index element={<Navigate to="/admin/dashboard" />} />
             <Route path="dashboard" element={<AdminHome />} />
             <Route path="books" element={<ProductManagement />} />
-            <Route path="bookdetails" element={<ProductDetailsManagement />} />
+            <Route
+              path="bookdetails/:bookId?"
+              element={<ProductDetailsManagement />}
+            />
             <Route path="vouchers" element={<VoucherManagement />} />
             <Route path="messages" element={<MessagesManagement />} />
             <Route path="reports" element={<ReportManagement />} />
@@ -62,12 +65,8 @@ function App() {
         </Route>
       </Routes>
 
-      {/* Show Chatbox only on non-admin and non-auth routes */}
-      {!(
-        location.pathname.startsWith("/admin") ||
-        location.pathname.startsWith("/signin") ||
-        location.pathname.startsWith("/signup")
-      ) && <Chatbox />}
+      {/* Show Chatbox only on non-admin pages */}
+      <Chatbox />
 
       <Footer />
       <ToastContainer />

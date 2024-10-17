@@ -11,7 +11,7 @@ import { Close, Send, ChatBubbleOutline } from "@mui/icons-material";
 // import { HubConnectionBuilder } from "@microsoft/signalr";
 import * as signalR from "@microsoft/signalr";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { GetConversationByUserIdApi } from "../../api/ConversationApi";
 import { GetMessageByConversationIdApi } from "../../api/MessageApi";
@@ -39,6 +39,7 @@ const ChatBox = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false); // For loading more messages
   const [ignoreScrollToBottom, setIgnoreScrollToBottom] = useState(false);
@@ -424,6 +425,13 @@ const ChatBox = () => {
     },
   };
 
+  if (
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/signin") ||
+    location.pathname.startsWith("/signup")
+  ) {
+    return null;
+  }
   return (
     <div style={styles.chatContainer}>
       {isOpen && (

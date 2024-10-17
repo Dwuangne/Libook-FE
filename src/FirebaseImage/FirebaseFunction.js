@@ -8,7 +8,7 @@ const MAX_SIZE_MB = 2; // Limit the size to 2MB (for example)
 const allowedTypes = ["image/jpeg", "image/png", "image/jpg"]; // Allowed image types
 
 // Function to upload images to Firebase
-export async function uploadImagesToFirebase(imagesArray) {
+export async function UploadImagesToFirebase(imagesArray) {
 
     // Validate number of images
     if (imagesArray.length > MAX_IMAGES) {
@@ -53,7 +53,7 @@ export async function uploadImagesToFirebase(imagesArray) {
 }
 
 // Function to delete an image from Firebase using its URL
-export async function deleteImageFromFirebase(imageUrl) {
+export async function DeleteImageFromFirebase(imageUrl) {
     const storage = getStorage(app); // Initialize Firebase storage
 
     try {
