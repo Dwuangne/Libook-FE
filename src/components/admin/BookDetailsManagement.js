@@ -7,19 +7,22 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { toast } from "react-toastify";
-import { uploadImagesToFirebase, deleteImageFromFirebase } from '../../FirebaseImage/FirebaseFunction';
-import { useNavigate } from 'react-router-dom';
+import { UploadImagesToFirebase, DeleteImageFromFirebase } from '../../FirebaseImage/FirebaseFunction';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-import { AddBookApi } from '../../api/BookApi';
+import { AddBookApi, GetBookByIdApi, UpdateBookApi } from '../../api/BookApi';
 import { GetAuthorApi } from '../../api/AuthorApi';
 import { GetSupplierApi } from '../../api/Supplier';
 import { GetCategoryApi } from '../../api/CategoryApi';
+import { AddBookImageApi, DeleteBookImageByIdApi } from "../../api/BookImageApi";
 
 const MAX_IMAGES = 5;
 const MAX_SIZE_MB = 2; // Limit the size to 2MB (for example)
 const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
 
 export default function BookDetailsManagement() {
+    const { state } = useLocation();
+    const bookId = state?.bookId;
     const [uploading, setUploading] = useState(false); // State for uploading process
     const [loading, setLoading] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -41,9 +44,13 @@ export default function BookDetailsManagement() {
     // const [isActive, setIsActive] = useState(true);
     const [description, setDescription] = useState('');
 
+    //Mapper
+    const [uploadedUrlsMap, setUploadedUrlsMap] = useState([]);
+
     const [authors, setAuthors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
+    const [book, setBook] = useState({});
 
     const fetchData = async () => {
         try {
@@ -61,10 +68,27 @@ export default function BookDetailsManagement() {
             setAuthors(authorData);
             setSuppliers(supplierData);
             setCategories(categoryData);
+            if (bookId) {
+                const bookDetailRes = await GetBookByIdApi(bookId);
+                const bookDetailData = bookDetailRes?.data.data || {};
+                setName(bookDetailData.name);
+                setPrice(bookDetailData.price);
+                setRemain(bookDetailData.remain);
+                setPercentDiscount(bookDetailData.precentDiscount);
+                setAuthorId(bookDetailData.authorId);
+                setCategoryId(bookDetailData.categoryId);
+                setSupplierId(bookDetailData.supplierId);
+                setDescription(bookDetailData.description);
+                setUploadedUrls(bookDetailData.bookImages.map((image) => image.bookImageUrl));
 
-            // console.log("data", authorData);
-            // console.log(supplierData);
-            // console.log(categoryData);
+                const uploadedUrlsMap = bookDetailData.bookImages.reduce((x, item) => {
+                    x[item.id] = item.bookImageUrl;
+                    return x;
+                }, {});
+                setUploadedUrlsMap(uploadedUrlsMap);
+
+            }
+
         } catch (err) {
             console.log(err);
         }
@@ -73,7 +97,7 @@ export default function BookDetailsManagement() {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-        }, 2000);
+        }, 1000);
         fetchData();
     }, []);
     // Handle image file selection and auto-upload to Firebase
@@ -114,9 +138,10 @@ export default function BookDetailsManagement() {
     // Confirm delete image
     const handleConfirmDelete = async () => {
         if (uploadedUrls.includes(imageToDelete)) {
-            // If the image is already uploaded to Firebase
+            // If the image is already uploaded to Firebase and DB
             try {
-                await deleteImageFromFirebase(imageToDelete);
+                await DeleteImageFromFirebase(imageToDelete);
+                await DeleteBookImageByIdApi(Object.keys(uploadedUrlsMap).find(key => uploadedUrlsMap[key] === imageToDelete));
                 setUploadedUrls(uploadedUrls.filter(url => url !== imageToDelete));
                 console.log('Image deleted from Firebase:', imageToDelete);
             } catch (err) {
@@ -134,17 +159,14 @@ export default function BookDetailsManagement() {
 
     const handleUploadImage = async (selectedFiles) => {
         try {
-            setUploading(true);
             const fileUpload = selectedFiles.map(fileObj => fileObj.file);
-            const urls = await uploadImagesToFirebase(fileUpload);
+            const urls = await UploadImagesToFirebase(fileUpload);
             setUploadedUrls(prevUrls => [...prevUrls, ...urls]);
             setSelectedFiles([]);
             return urls;
         } catch (err) {
             console.error(err.message);
             return [];
-        } finally {
-            setUploading(false);
         }
     }
 
@@ -209,6 +231,13 @@ export default function BookDetailsManagement() {
         return new Intl.NumberFormat("vi-VN").format(amount) + " VND";
     };
 
+    const handleSaveBook = () => {
+        if (bookId) {
+            handleUpdateBook();
+        } else {
+            handleAddBook();
+        }
+    };
     //Add book
     const handleAddBook = async () => {
         if (!validateForm()) {
@@ -216,6 +245,7 @@ export default function BookDetailsManagement() {
         }
         // Gửi bookData đến API
         try {
+            setUploading(true);
             const uploadedUrlsFromImages = await handleUploadImage(selectedFiles);
             const bookImages = uploadedUrlsFromImages.map(url => ({ bookImageUrl: url }));
 
@@ -223,9 +253,33 @@ export default function BookDetailsManagement() {
             toast.success("Book added successfully.", { autoClose: 1500 });
 
         } catch (error) {
-
             toast.error('Error adding book:', error);
         } finally {
+            setUploading(false);
+            navigate("/admin/books");
+        }
+    };
+    const handleUpdateBook = async () => {
+        if (!validateForm()) {
+            return; // If form is invalid, don't proceed
+        }
+
+        try {
+            setUploading(true);
+            const uploadedUrlsFromImages = await handleUploadImage(selectedFiles);
+
+            // Gọi API cho từng URL và lưu kết quả vào một mảng promise
+            const saveImagePromises = uploadedUrlsFromImages.map((url) =>
+                AddBookImageApi(url, bookId)
+            );
+            // Thực hiện tất cả các lời gọi API song song
+            await Promise.all(saveImagePromises);
+
+            await UpdateBookApi(bookId, name, description, price, percentDiscount, remain, authorId, categoryId, supplierId);
+        } catch (error) {
+            toast.error('Error updating book:', error);
+        } finally {
+            setUploading(false);
             navigate("/admin/books");
         }
     };
@@ -320,7 +374,7 @@ export default function BookDetailsManagement() {
                         <Autocomplete
                             options={authors}
                             getOptionLabel={(option) => option?.name || ""}
-                            // value={option.name}
+                            value={authors.find((author) => author.id === authorId) || null}
                             onChange={(e, newValue) => newValue ? setAuthorId(newValue.id) : setAuthorId("")}
                             renderInput={(params) => <TextField {...params} label="Author" variant="outlined" size="small"
                                 error={!!errors.authorId} // Shows error state
@@ -336,7 +390,7 @@ export default function BookDetailsManagement() {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <Typography textAlign={'left'}>{formatCurrency(price * (1 - percentDiscount / 100))}</Typography>
+                        <Typography sx={{ fontWeight: 800, textAlign: 'left', color: 'red' }}>{formatCurrency(price && percentDiscount ? price * (1 - percentDiscount / 100) : 0)}</Typography>
                     </Grid>
 
                     <Grid item xs={12} md={2}>
@@ -346,7 +400,7 @@ export default function BookDetailsManagement() {
                         <Autocomplete
                             options={categories || []}
                             getOptionLabel={(option) => option?.name || ""}
-                            // value={option.name}
+                            value={categories.find((category) => category.id === categoryId) || null}
                             onChange={(e, newValue) => newValue ? setCategoryId(newValue.id) : setCategoryId("")}
                             renderInput={(params) => <TextField {...params} label="Category" variant="outlined" size="small"
                                 error={!!errors.categoryId} // Shows error state
@@ -362,7 +416,7 @@ export default function BookDetailsManagement() {
                         <Autocomplete
                             options={suppliers || []}
                             getOptionLabel={(option) => option?.name || ""}
-                            // value={option.name}
+                            value={suppliers.find((supplier) => supplier.id === supplierId) || null}
                             onChange={(e, newValue) => newValue ? setSupplierId(newValue.id) : setSupplierId("")}
                             renderInput={(params) => <TextField {...params} label="Supplier" variant="outlined" size="small"
                                 error={!!errors.supplierId} // Shows error state
@@ -503,9 +557,10 @@ export default function BookDetailsManagement() {
                                 boxShadow: '0 6px 10px rgba(63, 81, 181, 0.3)',
                             }
                         }}
-                        onClick={handleAddBook}
+                        disabled={uploading}
+                        onClick={handleSaveBook}
                     >
-                        Save Book
+                        {uploading ? 'Uploading...' : 'Save Book'}
                     </Button>
                 </Box>
             </Box >
