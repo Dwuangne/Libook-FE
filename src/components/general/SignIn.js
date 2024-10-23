@@ -20,6 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const passwordVisibility = () => {
@@ -39,6 +40,7 @@ const Login = () => {
         navigate("/admin");
       } else if (roleHasLoggined === "Customer") {
         navigate("/");
+        window.location.reload();
       }
     }
   }, []);

@@ -71,12 +71,33 @@ const Header = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const truncateUsername = (fullUsername) => {
+    const atIndex = fullUsername.indexOf("@");
+    return atIndex !== -1 ? fullUsername.slice(0, atIndex) : fullUsername;
+  };
+
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("accessToken") !== null
+  );
+
+  // Lấy thông tin username và avatar từ localStorage
+  const fullUsername = localStorage.getItem("username") || "User";
+  const displayUsername = truncateUsername(fullUsername);
+  const avatarUrl = localStorage.getItem("avatarUrl") || ""; // Giả sử bạn lưu avatar
+  const role = localStorage.getItem("role") || "";
+
+  const [nameFilter, setNameFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [Books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // useEffect(() => {
   //   // Kiểm tra nếu trang chưa được tải lại
-  //   if (pathname === "/") {
-  //     // Kiểm tra nếu là trang homepage
-  //     if (!sessionStorage.getItem("hasReloaded")) {
-  //       sessionStorage.setItem("hasReloaded", "true");
+
+  //   if (!sessionStorage.getItem("hasReloaded")) {
+  //     sessionStorage.setItem("hasReloaded", "true");
+  //     if (pathname === "/") {
+  //       // Kiểm tra nếu là trang homepage
   //       window.location.reload();
   //     }
   //   }
@@ -118,25 +139,6 @@ const Header = () => {
       console.log("Logout successfully");
     }, 1000);
   };
-
-  const truncateUsername = (fullUsername) => {
-    const atIndex = fullUsername.indexOf("@");
-    return atIndex !== -1 ? fullUsername.slice(0, atIndex) : fullUsername;
-  };
-
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("accessToken") !== null
-  );
-  // Lấy thông tin username và avatar từ localStorage
-  const fullUsername = localStorage.getItem("username") || "User";
-  const displayUsername = truncateUsername(fullUsername);
-  const avatarUrl = localStorage.getItem("avatarUrl") || ""; // Giả sử bạn lưu avatar
-  const role = localStorage.getItem("role") || "";
-
-  const [nameFilter, setNameFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [Books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const handleNameKeyChange = (id) => {
     setNameFilter((prev) => (prev === id ? null : id));

@@ -51,7 +51,7 @@ const HomePage = () => {
         }
         setCategories(validCategories);
         setBooksByCategory(booksByCategory);
-        console.log(booksByCategory);
+        //console.log(booksByCategory);
       } catch (error) {
         console.error(error);
       } finally {
@@ -62,8 +62,8 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  const handleBookClick = (bookName) => {
-    navigate(`/bookdetail/${bookName}`);
+  const handleBookClick = (bookId) => {
+    navigate(`/${bookId}`);
   };
 
   const formatCurrency = (amount) => {
@@ -90,7 +90,7 @@ const HomePage = () => {
       <Box
         backgroundColor="#f0f0f0"
         paddingTop={10}
-        sx={{ display: "flex", flexDirection: "column", gap: "40px" }} // Added flexbox and gap
+        sx={{ display: "flex", flexDirection: "column", gap: "20px" }} // Added flexbox and gap
       >
         <ImageSlider images={images} />
         {loading ? (
@@ -120,7 +120,14 @@ const HomePage = () => {
               <Divider variant="middle" />
               <Grid container spacing={2} marginTop={2} paddingLeft={2}>
                 {booksByCategory[category.id]?.map((book) => (
-                  <Grid item xs={6} sm={4} md={3} lg={2} key={book.id}>
+                  <Grid
+                    item={true.toString()}
+                    xs={6}
+                    sm={4}
+                    md={3}
+                    lg={2}
+                    key={book.id}
+                  >
                     <Card
                       sx={{
                         boxShadow: "none",
@@ -133,7 +140,7 @@ const HomePage = () => {
                           transition: "all 0.3s ease",
                         },
                       }}
-                      onClick={() => handleBookClick(book.name)}
+                      onClick={() => handleBookClick(book.id)}
                     >
                       <Box
                         sx={{
@@ -245,7 +252,7 @@ const HomePage = () => {
                       "background-color 0.4s ease-in-out, color 0.4s ease-in-out, border 0.3s ease-in-out",
                     border: "2px solid red ",
                   }}
-                  onClick={() => navigate(`/booklist/${category.name}`)}
+                  onClick={() => navigate(`/booklist/${category.id}`)}
                 >
                   View More
                 </Button>

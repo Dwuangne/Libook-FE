@@ -27,7 +27,7 @@ const Footer = () => {
     <div
       style={{
         backgroundColor: "#f0f0f0", // Màu nền xám cho margin
-        padding: "90px 100px 0px 100px", // Padding để tạo khoảng cách với nội dung
+        padding: "60px 100px 0px 100px", // Padding để tạo khoảng cách với nội dung
       }}
     >
       <div
