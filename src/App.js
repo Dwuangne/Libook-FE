@@ -1,15 +1,19 @@
 import React from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+
 import SignUp from "./components/general/SignUp";
 import SignIn from "./components/general/SignIn";
 import ProtectedRoute from "./gateway/ProtectedRoute";
 import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
 import HomePage from "./components/general/homePage";
 import Chatbox from "./components/general/Chatbox";
 import BookList from "./components/general/BookList";
+import BookDetails from "./components/general/BookDetails";
+
+//admin
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminHome from "./components/admin/AdminHome";
 import ProductDetailsManagement from "./components/admin/BookDetailsManagement";
@@ -33,15 +37,18 @@ function App() {
   const redirectIfAdmin = (element) => {
     return role === "Admin" ? <Navigate to="/admin" /> : element;
   };
+
   return (
     <div className="App">
       <Header />
       <Routes>
         {/* Public Routes */}
+
         <Route path="/" element={redirectIfAdmin(<HomePage />)} />
         <Route path="/bookslist" element={redirectIfAdmin(<BookList />)} />
         <Route path="/signup" element={redirectIfAdmin(<SignUp />)} />
         <Route path="/signin" element={redirectIfAdmin(<SignIn />)} />
+        <Route path="/:bookId" element={redirectIfAdmin(<BookDetails />)} />
 
         {/* Customer Protected Routes */}
         <Route element={<ProtectedRoute allowedRole="Customer" />}>
@@ -55,7 +62,7 @@ function App() {
             <Route path="dashboard" element={<AdminHome />} />
             <Route path="books" element={<ProductManagement />} />
             <Route
-              path="bookdetails/:bookId?"
+              path="bookdetails/:bookId"
               element={<ProductDetailsManagement />}
             />
             <Route path="vouchers" element={<VoucherManagement />} />

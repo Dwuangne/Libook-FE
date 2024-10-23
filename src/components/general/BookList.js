@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import replaceImg from "../../assets/Blue_Book.jpg";
 import { GetAllBooksApi } from "../../api/BookApi";
 import { GetAuthorApi } from "../../api/AuthorApi";
 import { GetSupplierApi } from "../../api/Supplier";
 import { GetCategoryApi } from "../../api/CategoryApi";
-import { useNavigate, useLocation } from "react-router-dom";
-import replaceImg from "../../assets/Blue_Book.jpg";
 
 import {
   Box,
@@ -49,6 +49,8 @@ const BookList = () => {
   const [visible, setVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
+  const params = useParams();
+  console.log(params);
 
   // Đoạn này xử lý việc hiện/ẩn sidebar dựa trên cuộn trang
   useEffect(() => {
