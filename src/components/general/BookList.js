@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import replaceImg from "../../assets/Blue_Book.jpg";
 import { GetAllBooksApi } from "../../api/BookApi";
 import { GetAuthorApi } from "../../api/AuthorApi";
@@ -19,23 +19,23 @@ import {
   MenuItem,
   Typography,
   Pagination,
-  Divider,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
 const BookList = () => {
-  const navigate = useNavigate();
   window.document.title = "Books";
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const params = useParams();
+  const [visible, setVisible] = useState(false);
 
-  // Get info book
+  const [loading, setLoading] = useState(false);
   const [Books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
 
-  const [categoryMap, setCategoryMap] = useState([]);
   const [authorMap, setAuthorMap] = useState([]);
+  const [categoryMap, setCategoryMap] = useState([]);
   const [supplierMap, setSupplierMap] = useState([]);
 
   const [nameFilter, setNameFilter] = useState("");
@@ -45,23 +45,19 @@ const BookList = () => {
   const [orDerByFilter, setOrDerByFilter] = useState("");
   const [isDescending, setIsDescending] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
-
-  const [visible, setVisible] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
-  const params = useParams();
-  console.log(params);
 
-  // Đoạn này xử lý việc hiện/ẩn sidebar dựa trên cuộn trang
+  // Xử lý cuộn trang để hiện/ẩn sidebar
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
-      setVisible(scrollY > 70);
+      setVisible(window.scrollY > 70);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fetch dữ liệu từ API
   const fetchData = async () => {
     try {
       const [authorRes, supplierRes, categoryRes, bookRes] = await Promise.all([
@@ -74,43 +70,36 @@ const BookList = () => {
           categoryID: categoryIdFilter,
           supplierID: supplierIdFilter,
           orDerBy: orDerByFilter,
-          isDescending: isDescending,
-          pageIndex: pageIndex - 1,
-          pageSize: pageSize,
+          isDescending,
+          pageIndex: pageIndex,
+          pageSize,
         }),
       ]);
 
-      const authorData = authorRes?.data?.data || [];
-      const supplierData = supplierRes?.data?.data || [];
-      const categoryData = categoryRes?.data?.data || [];
-      const bookData = bookRes?.data?.data || [];
+      setAuthors(authorRes?.data?.data || []);
+      setSuppliers(supplierRes?.data?.data || []);
+      setCategories(categoryRes?.data?.data || []);
+      setBooks(bookRes?.data?.data?.bookResponseDTOs || []);
+      setTotalPage(bookRes?.data?.data?.totalPage || 1);
 
-      setAuthors(authorData);
-      setSuppliers(supplierData);
-      setCategories(categoryData);
-      setBooks(bookData);
-      // console.log(authorData);
-      // console.log(supplierData);
-      // console.log(categoryData);
-      // console.log(bookData);
-
-      const authorMap = authorData.reduce((x, item) => {
-        x[item.id] = item.name;
-        return x;
-      }, {});
-      setAuthorMap(authorMap);
-
-      const categoryMap = categoryData.reduce((x, item) => {
-        x[item.id] = item.name;
-        return x;
-      }, {});
-      setCategoryMap(categoryMap);
-
-      const supplierMap = supplierData.reduce((x, item) => {
-        x[item.id] = item.name;
-        return x;
-      }, {});
-      setSupplierMap(supplierMap);
+      setAuthorMap(
+        authorRes.data.data.reduce(
+          (acc, item) => ({ ...acc, [item.id]: item.name }),
+          {}
+        )
+      );
+      setCategoryMap(
+        categoryRes.data.data.reduce(
+          (acc, item) => ({ ...acc, [item.id]: item.name }),
+          {}
+        )
+      );
+      setSupplierMap(
+        supplierRes.data.data.reduce(
+          (acc, item) => ({ ...acc, [item.id]: item.name }),
+          {}
+        )
+      );
     } catch (err) {
       console.log(err);
     }
@@ -118,9 +107,7 @@ const BookList = () => {
 
   useEffect(() => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    setTimeout(() => setLoading(false), 500);
     fetchData();
   }, [
     nameFilter,
@@ -133,85 +120,55 @@ const BookList = () => {
     pageSize,
   ]);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+
+  const handleFilterChange = (setter) => (event) => {
+    setter(event.target.value);
+    setPageIndex(1);
   };
 
-  const handleNameKeyChange = (id) => {
-    setNameFilter((prev) => (prev === id ? null : id));
-    setCurrentPage(1);
+  const handleSortChange = (e) => {
+    const [orderBy, desc] = e.target.value.split("-");
+    setOrDerByFilter(orderBy);
+    setIsDescending(desc === "true");
   };
 
-  const handleSortChange = (e, isDescending) => {
-    if (isDescending !== null) {
-      setIsDescending(isDescending);
-    }
-  };
-
-  const handleAuthorChange = (id) => {
-    setAuthorIdFilter((prev) => (prev === id ? null : id));
-    setCurrentPage(1);
-  };
-
-  const handleCategoryChange = (id) => {
-    setCategoryIdFilter((prev) => (prev === id ? null : id));
-    setCurrentPage(1);
-  };
-
-  const handleSupplierChange = (id) => {
-    setSupplierIdFilter((prev) => (prev === id ? null : id));
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (e, page) => {
-    setCurrentPage(page);
-  };
-
-  const sortBooks = (books) => {
-    return books.sort((a, b) => {
-      if (orDerByFilter === "name") {
-        return isDescending
-          ? b.name.localeCompare(a.name) // Z-A
-          : a.name.localeCompare(b.name); // A-Z
-      } else if (orDerByFilter === "price") {
-        return isDescending
-          ? b.price - a.price // Giảm dần
-          : a.price - b.price; // Tăng dần
-      }
-      return 0;
-    });
-  };
+  const handlePageChange = (e, page) => setPageIndex(page);
 
   const handleClearFilters = () => {
-    setNameFilter(null);
-    setAuthorIdFilter(null);
-    setCategoryIdFilter(null);
-    setSupplierIdFilter(null);
+    setNameFilter("");
+    setAuthorIdFilter("");
+    setCategoryIdFilter("");
+    setSupplierIdFilter("");
   };
 
   return (
     <Box
-      sx={{ display: "flex", backgroundColor: "#fafafa", marginTop: "62px" }}
+      sx={{
+        display: "flex",
+        backgroundColor: "#f0f0f0",
+        marginTop: "62px",
+        padding: "0 100px 50px 100px",
+      }}
     >
       {/* Sidebar Filter */}
       <Box
         sx={{
           width: "20%",
-          position: "relative",
-          height: "100%",
           borderRight: "1px solid #ddd",
           padding: 2,
+          backgroundColor: "white",
         }}
       >
         <Typography variant="h6" padding={2}>
           Filter Options
         </Typography>
-
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Author</InputLabel>
           <Select
             value={authorIdFilter}
-            onChange={(e) => setAuthorIdFilter(e.target.value)}
+            onChange={handleFilterChange(setAuthorIdFilter)}
             label="Author"
           >
             <MenuItem value="">All Authors</MenuItem>
@@ -226,7 +183,7 @@ const BookList = () => {
           <InputLabel>Category</InputLabel>
           <Select
             value={categoryIdFilter}
-            onChange={(e) => setCategoryIdFilter(e.target.value)}
+            onChange={handleFilterChange(setCategoryIdFilter)}
             label="Category"
           >
             <MenuItem value="">All Categories</MenuItem>
@@ -241,7 +198,7 @@ const BookList = () => {
           <InputLabel>Supplier</InputLabel>
           <Select
             value={supplierIdFilter}
-            onChange={(e) => setSupplierIdFilter(e.target.value)}
+            onChange={handleFilterChange(setSupplierIdFilter)}
             label="Supplier"
           >
             <MenuItem value="">All Suppliers</MenuItem>
@@ -252,30 +209,22 @@ const BookList = () => {
             ))}
           </Select>
         </FormControl>
-        <Button
-          variant="contained"
-          backgroundColor="#003ce9"
-          fullWidth
-          onClick={handleClearFilters}
-        >
+        <Button variant="contained" fullWidth onClick={handleClearFilters}>
           Clear
         </Button>
       </Box>
 
       {/* Book List */}
-      <Box sx={{ width: "80%", padding: 3, height: "100%" }}>
-        {/* Dropdown Menu (Sorting Options) */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-          <FormControl sx={{ width: "80px", mb: 2 }}>
+      <Box sx={{ width: "80%", padding: 3, backgroundColor: "#fff" }}>
+        {/* Sorting Options */}
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-start", mb: 3, pt: 2 }}
+        >
+          <FormControl sx={{ size: "small", width: "180px", mb: 2 }}>
             <InputLabel>Sort By</InputLabel>
             <Select
-              size="small"
               value={`${orDerByFilter}-${isDescending}`}
-              onChange={(e) => {
-                const [orderBy, desc] = e.target.value.split("-");
-                setOrDerByFilter(orderBy);
-                setIsDescending(desc === "true");
-              }}
+              onChange={handleSortChange}
               label="Sort By"
             >
               <MenuItem value="name-false">A-Z</MenuItem>
@@ -292,17 +241,18 @@ const BookList = () => {
             <CircularProgress />
           ) : (
             Books.map((book) => (
-              <Grid item={true.toString()} xs={6} sm={4} md={2.4} key={book.id}>
+              <Grid item xs={6} sm={4} md={2.4} key={book.id}>
                 <Card
                   sx={{
                     boxShadow: "none",
                     flexDirection: "column",
                     height: "300px",
                     width: "200px",
+                    paddingBottom: "10px",
                     "&:hover": {
-                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)", // Hiệu ứng đổ bóng khi hover
-                      transform: "translateY(-5px)", // Tăng thêm hiệu ứng di chuyển nhẹ lên trên
-                      transition: "all 0.3s ease", // Thời gian chuyển đổi khi hover
+                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+                      transform: "translateY(-5px)",
+                      transition: "all 0.3s ease",
                     },
                   }}
                 >
@@ -337,23 +287,18 @@ const BookList = () => {
                     <Typography
                       variant="h7"
                       sx={{
-                        // fontWeight: 500,
                         textAlign: "left",
-                        width: "100%",
-                        height: "3rem", // Thiết lập chiều cao cố định cho tiêu đề
-                        overflow: "hidden", // Đảm bảo nội dung không bị vỡ
+                        height: "3rem",
+                        overflow: "hidden",
                         textOverflow: "ellipsis",
                         lineHeight: "1.5rem",
-                        whiteSpace: "normal", // Bắt buộc xuống dòng khi văn bản dài
                       }}
                     >
                       {book.name}
                     </Typography>
-
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "left",
                         alignItems: "center",
                         marginTop: 1,
                       }}
@@ -367,7 +312,6 @@ const BookList = () => {
                           book.price - (book.price * book.precentDiscount) / 100
                         )}
                       </Typography>
-
                       {book.precentDiscount > 0 && (
                         <Box
                           sx={{
@@ -383,14 +327,13 @@ const BookList = () => {
                         </Box>
                       )}
                     </Box>
-
                     {book.precentDiscount > 0 && (
                       <Typography
                         variant="body2"
                         sx={{
-                          textDecoration: "line-through",
                           color: "gray",
-                          textAlign: "left", // Căn lề trái
+                          textDecoration: "line-through",
+                          fontWeight: "light",
                         }}
                       >
                         {formatCurrency(book.price)}
@@ -404,20 +347,31 @@ const BookList = () => {
         </Grid>
 
         {/* Pagination */}
-        <Box
+        <Pagination
+          count={totalPage}
+          page={pageIndex}
+          onChange={handlePageChange}
+          size="large"
           sx={{
-            mt: 3,
+            marginTop: "35px",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
+
+            "& .MuiPaginationItem-root": {
+              backgroundColor: "f0f0f0", // Màu nền cho các item
+              color: "black", // Màu chữ
+              border: "1px solid grey",
+              "&:hover": {
+                backgroundColor: "f0f0f0", // Màu nền khi hover
+              },
+            },
+            "& .Mui-selected": {
+              backgroundColor: "red", // Màu nền cho item được chọn
+              color: "white", // Màu chữ cho item được chọn]
+              border: "none",
+            },
           }}
-        >
-          <Pagination
-            count={Math.ceil(Books.length / pageSize)}
-            page={currentPage}
-            onChange={handlePageChange}
-          />
-        </Box>
+        />
       </Box>
     </Box>
   );
