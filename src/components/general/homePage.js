@@ -36,6 +36,8 @@ const HomePage = () => {
         const categories = categoryRes?.data?.data || [];
         const validCategories = [];
         const booksByCategory = {};
+        console.log(">>>> Categories fetched:", categoryRes);
+        console.log(">>>> Category data: ", categories);
 
         for (const category of categories) {
           const bookRes = await GetAllBooksApi({
@@ -43,7 +45,7 @@ const HomePage = () => {
             pageIndex: 0,
             pageSize: 6, // Limit number of books per category
           });
-          const books = bookRes?.data?.data || [];
+          const books = bookRes?.data?.data?.bookResponseDTOs || [];
           if (books.length > 0) {
             booksByCategory[category.id] = books;
             validCategories.push(category); // Only keep categories with books
