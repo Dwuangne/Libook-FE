@@ -14,19 +14,9 @@ import {
   AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
 import {
-  Typography,
-  Menu,
-  MenuItem,
-  AppBar,
-  Box,
-  CssBaseline,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
+  Typography, Menu, MenuItem, AppBar, Box,
+  CssBaseline, Divider, Drawer, List, ListItem, 
+  ListItemButton, ListItemIcon, ListItemText,
 } from "@mui/material";
 import { toast } from "react-toastify";
 const drawerWidthOpen = 240; // Chiều rộng khi menu mở
@@ -92,7 +82,7 @@ export default function AdminLayout() {
       navigate("/");
       window.scrollTo({ top: 0, behavior: "instant" });
       console.log("Logout successfully");
-    }, 1000);
+    }, 500);
   };
 
   const truncateUsername = (fullUsername) => {
