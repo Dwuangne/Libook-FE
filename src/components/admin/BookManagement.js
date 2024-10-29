@@ -23,11 +23,13 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
+import { Add as AddIcon } from '@mui/icons-material';
+
 export default function BookManagement() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const [Books, setBooks] = useState([]);
+    const [books, setBooks] = useState([]);
     const [authors, setAuthors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -45,8 +47,8 @@ export default function BookManagement() {
     const [pageIndex, setPageIndex] = useState(1);
 
     const [visible, setVisible] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(12);
+    const [totalPages, setTotalPages] = useState(1);
 
     const fetchData = async () => {
         try {
@@ -61,7 +63,7 @@ export default function BookManagement() {
                     supplierID: supplierIdFilter,
                     orDerBy: orDerByFilter,
                     isDescending: isDescending,
-                    pageIndex: pageIndex - 1,
+                    pageIndex: pageIndex,
                     pageSize: pageSize,
                 }),
             ]);
@@ -69,12 +71,14 @@ export default function BookManagement() {
             const authorData = authorRes?.data?.data || [];
             const supplierData = supplierRes?.data?.data || [];
             const categoryData = categoryRes?.data?.data || [];
-            const bookData = bookRes?.data?.data || [];
+            const bookData = bookRes?.data?.data.bookResponseDTOs || [];
+            const totalPages = bookRes?.data?.data.totalPage || 1;
 
             setAuthors(authorData);
             setSuppliers(supplierData);
             setCategories(categoryData);
             setBooks(bookData);
+            setTotalPages(totalPages);
 
             const authorMap = authorData.reduce((x, item) => {
                 x[item.id] = item.name;
@@ -100,10 +104,9 @@ export default function BookManagement() {
 
     useEffect(() => {
         setLoading(true);
-        setTimeout(() => {
+        fetchData().then(() => {
             setLoading(false);
-        }, 1000);
-        fetchData();
+        });
     }, [
         nameFilter,
         authorIdFilter,
@@ -120,30 +123,30 @@ export default function BookManagement() {
     };
 
     const handlePageChange = (e, page) => {
-        setCurrentPage(page);
-      };
-    
-      const sortBooks = (books) => {
+        setPageIndex(page);
+    };
+
+    const sortBooks = (books) => {
         return books.sort((a, b) => {
-          if (orDerByFilter === "name") {
-            return isDescending
-              ? b.name.localeCompare(a.name) // Z-A
-              : a.name.localeCompare(b.name); // A-Z
-          } else if (orDerByFilter === "price") {
-            return isDescending
-              ? b.price - a.price // Giảm dần
-              : a.price - b.price; // Tăng dần
-          }
-          return 0;
+            if (orDerByFilter === "name") {
+                return isDescending
+                    ? b.name.localeCompare(a.name) // Z-A
+                    : a.name.localeCompare(b.name); // A-Z
+            } else if (orDerByFilter === "price") {
+                return isDescending
+                    ? b.price - a.price // Giảm dần
+                    : a.price - b.price; // Tăng dần
+            }
+            return 0;
         });
-      };
-    
-      const handleClearFilters = () => {
+    };
+
+    const handleClearFilters = () => {
         setNameFilter(null);
         setAuthorIdFilter(null);
         setCategoryIdFilter(null);
         setSupplierIdFilter(null);
-      };
+    };
 
     return (
         <Box
@@ -174,6 +177,7 @@ export default function BookManagement() {
                 </Typography>
                 <Button
                     variant="contained"
+                    startIcon={<AddIcon />}
                     sx={{
                         backgroundColor: "#3F51B5", // Consistent primary color
                         color: "white",
@@ -198,7 +202,6 @@ export default function BookManagement() {
 
             </Box>
 
-            {/* Additional content for book management would go here */}
             {/* Book Grid */}
             <Box
                 sx={{ display: "flex", backgroundColor: "#fafafa", marginTop: "62px" }}
@@ -276,7 +279,7 @@ export default function BookManagement() {
                 <Box sx={{ width: "80%", padding: 3, height: "100%" }}>
                     {/* Dropdown Menu (Sorting Options) */}
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-                        <FormControl sx={{ width: "80px", mb: 2 }}>
+                        <FormControl variant="outlined" sx={{ minWidth: "100px", mb: 2 }}>
                             <InputLabel>Sort By</InputLabel>
                             <Select
                                 size="small"
@@ -299,10 +302,12 @@ export default function BookManagement() {
                     {/* Book Grid */}
                     <Grid container spacing={2}>
                         {loading ? (
-                            <CircularProgress />
+                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                                <CircularProgress size={60} thickness={4} color="primary" />
+                            </Box>
                         ) : (
-                            Books.map((book) => (
-                                <Grid item={true.toString()} xs={6} sm={4} md={2.4} key={book.id}>
+                            books.map((book) => (
+                                <Grid item xs={6} sm={4} md={2.4} key={book.id}>
                                     <Card
                                         sx={{
                                             boxShadow: "none",
@@ -310,23 +315,18 @@ export default function BookManagement() {
                                             height: "300px",
                                             width: "200px",
                                             "&:hover": {
-                                                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)", // Hiệu ứng đổ bóng khi hover
-                                                transform: "translateY(-5px)", // Tăng thêm hiệu ứng di chuyển nhẹ lên trên
-                                                transition: "all 0.3s ease", // Thời gian chuyển đổi khi hover
+                                                boxShadow: "0px 6px 30px rgba(0, 0, 0, 0.15)",
+                                                transform: "translateY(-8px)",
+                                                transition: "transform 0.25s ease, box-shadow 0.25s ease",
                                             },
                                         }}
                                         onClick={() =>
                                             navigate(
-                                              `/admin/bookdetails/${book.name
-                                                .toLowerCase()
-                                                .replace(/\s/g, "-")}`,
-                                              { state: { bookId: book.id } },
-                                              window.scrollTo({
-                                                top: 0,
-                                                behavior: "smooth",
-                                              })
+                                                `/admin/bookdetails/${book.name.toLowerCase().replace(/\s/g, "-")}`,
+                                                { state: { bookId: book.id } },
+                                                window.scrollTo({ top: 0, behavior: "smooth" })
                                             )
-                                          }
+                                        }
                                     >
                                         <Box
                                             sx={{
@@ -359,14 +359,13 @@ export default function BookManagement() {
                                             <Typography
                                                 variant="h7"
                                                 sx={{
-                                                    // fontWeight: 500,
                                                     textAlign: "left",
                                                     width: "100%",
-                                                    height: "3rem", // Thiết lập chiều cao cố định cho tiêu đề
-                                                    overflow: "hidden", // Đảm bảo nội dung không bị vỡ
+                                                    height: "3rem",
+                                                    overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                     lineHeight: "1.5rem",
-                                                    whiteSpace: "normal", // Bắt buộc xuống dòng khi văn bản dài
+                                                    whiteSpace: "normal",
                                                 }}
                                             >
                                                 {book.name}
@@ -381,13 +380,11 @@ export default function BookManagement() {
                                                 }}
                                             >
                                                 <Typography
-                                                    variant="h7"
+                                                    variant="h6"
                                                     color="error"
                                                     sx={{ fontWeight: "bold" }}
                                                 >
-                                                    {formatCurrency(
-                                                        book.price - (book.price * book.precentDiscount) / 100
-                                                    )}
+                                                    {formatCurrency(book.price - (book.price * book.precentDiscount) / 100)}
                                                 </Typography>
 
                                                 {book.precentDiscount > 0 && (
@@ -412,7 +409,7 @@ export default function BookManagement() {
                                                     sx={{
                                                         textDecoration: "line-through",
                                                         color: "gray",
-                                                        textAlign: "left", // Căn lề trái
+                                                        textAlign: "left",
                                                     }}
                                                 >
                                                     {formatCurrency(book.price)}
@@ -435,12 +432,14 @@ export default function BookManagement() {
                         }}
                     >
                         <Pagination
-                            count={Math.ceil(Books.length / pageSize)}
-                            page={currentPage}
+                            color="primary"
+                            count={totalPages}
+                            page={pageIndex}
                             onChange={handlePageChange}
                         />
                     </Box>
                 </Box>
+
             </Box>
         </Box>
     );

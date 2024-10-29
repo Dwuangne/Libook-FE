@@ -20,6 +20,7 @@ import {
   GetConversationByIdApi,
 } from "../../api/ConversationApi";
 import { GetMessageByConversationIdApi } from "../../api/MessageApi";
+import { Container } from "lucide-react";
 
 const MAX_MESSAGE_LENGTH = 100;
 const pageSize = 20;
@@ -82,6 +83,7 @@ export default function MessagesManagement() {
       const conversationsRes = await GetAllConversationsApi();
       const conversationsData = conversationsRes?.data?.data || [];
       setConversations(conversationsData);
+      console.log(conversationsData);
 
       if (conversationsData.length > 0 && !selectedConversationId) {
         handleSelectConversation(conversationsData[0].id);
@@ -107,8 +109,6 @@ export default function MessagesManagement() {
       setLoadingMore(true);
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
         const [conversationRes, messageRes] = await Promise.all([
           GetConversationByIdApi(conversationId),
           GetMessageByConversationIdApi(
@@ -122,6 +122,7 @@ export default function MessagesManagement() {
         const messageData = messageRes?.data?.data || {};
 
         setSelectedConversation(conversationData);
+        console.log(messageData);
         if (messageData.length < pageSize) {
           setHasMoreMessages(false); // No more messages to load
         }
@@ -149,11 +150,7 @@ export default function MessagesManagement() {
   useEffect(() => {
     if (isLoggedIn) {
       setLoading(true);
-      fetchData().finally(() =>
-        setTimeout(() => {
-          setLoading(true);
-        }, 1000)
-      );
+      fetchData().then(() => setLoading(false));
     }
   }, [isLoggedIn]);
 
@@ -445,11 +442,11 @@ export default function MessagesManagement() {
               }}
             >
               {selectedConversation &&
-              selectedConversation.participants.length > 0
+                selectedConversation.participants.length > 0
                 ? selectedConversation.participants
-                    .filter((participant) => participant.username !== username)
-                    .map((participant) => participant.username) // Lấy username
-                    .join(", ")
+                  .filter((participant) => participant.username !== username)
+                  .map((participant) => participant.username) // Lấy username
+                  .join(", ")
                 : "Select Conversation"}
             </Typography>
           </Box>
@@ -494,25 +491,37 @@ export default function MessagesManagement() {
                 <Box
                   key={index}
                   sx={{
-                    alignSelf:
-                      msg.userId === userId ? "flex-end" : "flex-start",
-                    maxWidth: "80%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: msg.userId === userId ? "flex-end" : "flex-start",
+                    px: 2, 
+                    mb: 1.5, 
                   }}
                 >
+                  {/* Tên người gửi */}
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: theme.text.secondary,
+                      mb: 0.3, 
+                      textAlign: msg.userId === userId ? "right" : "left",
+                    }}
+                  >
+                    {selectedConversation.participants.find((p) => p.userId === msg.userId)?.username || "Anonymous"}
+                  </Typography>
+
+                  {/* Hộp chứa nội dung tin nhắn */}
                   <Paper
                     sx={{
                       p: 1.5,
+                      maxWidth: "75%", 
                       backgroundColor:
-                        msg.userId === userId
-                          ? theme.primary
-                          : theme.background.main,
-                      color:
-                        msg.userId === userId ? "white" : theme.text.primary,
+                        msg.userId === userId ? theme.primary : theme.background.main,
+                      color: msg.userId === userId ? "white" : theme.text.primary,
                       borderRadius:
-                        msg.userId === userId
-                          ? "20px 20px 0 20px"
-                          : "20px 20px 20px 0",
+                        msg.userId === userId ? "20px 20px 0 20px" : "20px 20px 20px 0",
                       boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+                      wordBreak: "break-word", 
                     }}
                   >
                     <Typography variant="body1" sx={{ textAlign: "left" }}>
@@ -520,6 +529,7 @@ export default function MessagesManagement() {
                     </Typography>
                   </Paper>
                 </Box>
+
               ))
             ) : (
               <Typography
@@ -646,11 +656,11 @@ export default function MessagesManagement() {
                     >
                       {conversation && conversation.participants.length > 0
                         ? conversation.participants
-                            .filter(
-                              (participant) => participant.username !== username
-                            )
-                            .map((participant) => participant.username) // Lấy username
-                            .join(", ")
+                          .filter(
+                            (participant) => participant.username !== username
+                          )
+                          .map((participant) => participant.username) // Lấy username
+                          .join(", ")
                         : "New Conversation"}
                     </Typography>
                     <Typography

@@ -95,10 +95,9 @@ export default function BookDetailsManagement() {
     };
     useEffect(() => {
         setLoading(true);
-        setTimeout(() => {
+        fetchData().then(() => {
             setLoading(false);
-        }, 1000);
-        fetchData();
+        });
     }, []);
     // Handle image file selection and auto-upload to Firebase
     const handleImageChange = async (e) => {
