@@ -37,8 +37,7 @@ const Footer = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          // boxShadow: "1px 1px 3px rgba(0,0,0.16)",
-          padding: "30px 0 10px 0",
+          paddingTop: "30px",
           borderRadius: "8px",
         }}
       >

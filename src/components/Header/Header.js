@@ -91,20 +91,18 @@ const Header = () => {
   const [Books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   // Kiểm tra nếu trang chưa được tải lại
-
-  //   if (!sessionStorage.getItem("hasReloaded")) {
-  //     sessionStorage.setItem("hasReloaded", "true");
-  //     if (pathname === "/") {
-  //       // Kiểm tra nếu là trang homepage
-  //       window.location.reload();
-  //     }
-  //   }
-  // }, []);
-
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleSearchChange = (event) => {
+    setNameFilter(event.target.value);
+  };
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    if (nameFilter.trim() !== "") {
+      navigate(`/bookslist?keyword=${encodeURIComponent(nameFilter)}`);
+    }
   };
 
   const handleClose = () => {
@@ -138,11 +136,6 @@ const Header = () => {
       window.scrollTo({ top: 0, behavior: "instant" });
       console.log("Logout successfully");
     }, 1000);
-  };
-
-  const handleNameKeyChange = (id) => {
-    setNameFilter((prev) => (prev === id ? null : id));
-    setCurrentPage(1);
   };
 
   // Lắng nghe sự kiện scroll
@@ -211,16 +204,60 @@ const Header = () => {
             />
           </Link>
 
-          <Search sx={{ flexGrow: 1, maxWidth: "500px", mx: 2 }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search book's name ..."
-              inputProps={{ "aria-label": "search" }}
-              sx={{ width: "100%" }}
-            />
-          </Search>
+          {/* Search form */}
+          <Box
+            component="form"
+            onSubmit={handleSearchSubmit}
+            sx={{
+              flexGrow: 1,
+              maxWidth: "500px",
+              //mx: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Search
+              sx={{
+                width: "100%",
+                position: "relative",
+                borderRadius: "25px",
+                border: "1px solid grey",
+              }}
+            >
+              <StyledInputBase
+                placeholder="Search book's name ..."
+                inputProps={{ "aria-label": "search" }}
+                value={nameFilter}
+                onChange={handleSearchChange}
+                sx={{
+                  width: "80%",
+                  paddingLeft: "0px",
+                  "& .MuiInputBase-input": {
+                    marginLeft: "0", // Bỏ margin mặc định
+                  },
+                  border: "none",
+                }}
+              />
+              <IconButton
+                type="submit"
+                sx={{
+                  position: "absolute",
+                  right: "4px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "black",
+                  width: "32px", // giảm kích thước nút
+                  height: "32px", // giảm kích thước nút
+                  "&:hover": {
+                    backgroundColor: "#333333",
+                  },
+                  transition: "background-color 0.2s",
+                }}
+              >
+                <SearchIcon sx={{ color: "white", fontSize: "1.2rem" }} />
+              </IconButton>
+            </Search>
+          </Box>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton

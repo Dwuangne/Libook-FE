@@ -30,3 +30,7 @@ export const loginGoogleApi = (token) => {
     token: token,
   });
 };
+
+export const userProfileApi = () => {
+  return axiosJWT.get(URL_LOGIN);
+};
