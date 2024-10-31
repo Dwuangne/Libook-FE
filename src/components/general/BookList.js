@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import replaceImg from "../../assets/Blue_Book.jpg";
 import { GetAllBooksApi } from "../../api/BookApi";
 import { GetAuthorApi } from "../../api/AuthorApi";
 import { GetSupplierApi } from "../../api/Supplier";
 import { GetCategoryApi } from "../../api/CategoryApi";
+import debounce from "lodash.debounce";
 
 import {
   Box,
@@ -22,22 +23,19 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
-const BookList = () => {
-  window.document.title = "Books";
+const BooksList = () => {
   const navigate = useNavigate();
-  const params = useParams();
-  const [visible, setVisible] = useState(false);
+  const location = useLocation();
 
+  const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [Books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-
   const [authorMap, setAuthorMap] = useState([]);
   const [categoryMap, setCategoryMap] = useState([]);
   const [supplierMap, setSupplierMap] = useState([]);
-
   const [nameFilter, setNameFilter] = useState("");
   const [authorIdFilter, setAuthorIdFilter] = useState("");
   const [categoryIdFilter, setCategoryIdFilter] = useState("");
@@ -48,7 +46,19 @@ const BookList = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
-  // Xử lý cuộn trang để hiện/ẩn sidebar
+  // Set document title
+  useEffect(() => {
+    window.document.title = "Books";
+  }, []);
+
+  // Handle URL search parameter changes
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const keyword = searchParams.get("keyword") || "";
+    setNameFilter(keyword);
+  }, [location.search]);
+
+  // Handle scroll to toggle sidebar visibility
   useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 70);
@@ -57,72 +67,80 @@ const BookList = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch dữ liệu từ API
-  const fetchData = async () => {
-    try {
-      const [authorRes, supplierRes, categoryRes, bookRes] = await Promise.all([
-        GetAuthorApi(),
-        GetSupplierApi(),
-        GetCategoryApi(),
-        GetAllBooksApi({
-          filter: nameFilter,
-          authorID: authorIdFilter,
-          categoryID: categoryIdFilter,
-          supplierID: supplierIdFilter,
-          orDerBy: orDerByFilter,
-          isDescending,
-          pageIndex: pageIndex,
-          pageSize,
-        }),
-      ]);
+  // Fetch data function with debounce
+  const fetchData = useCallback(
+    debounce(async () => {
+      try {
+        setLoading(true);
+        const [authorRes, supplierRes, categoryRes, bookRes] =
+          await Promise.all([
+            GetAuthorApi(),
+            GetSupplierApi(),
+            GetCategoryApi(),
+            GetAllBooksApi({
+              filter: nameFilter,
+              authorID: authorIdFilter,
+              categoryID: categoryIdFilter,
+              supplierID: supplierIdFilter,
+              orDerBy: orDerByFilter,
+              isDescending,
+              pageIndex,
+              pageSize,
+            }),
+          ]);
 
-      setAuthors(authorRes?.data?.data || []);
-      setSuppliers(supplierRes?.data?.data || []);
-      setCategories(categoryRes?.data?.data || []);
-      setBooks(bookRes?.data?.data?.bookResponseDTOs || []);
-      setTotalPage(bookRes?.data?.data?.totalPage || 1);
+        setAuthors(authorRes?.data?.data || []);
+        setSuppliers(supplierRes?.data?.data || []);
+        setCategories(categoryRes?.data?.data || []);
+        setBooks(bookRes?.data?.data?.bookResponseDTOs || []);
+        setTotalPage(bookRes?.data?.data?.totalPage || 1);
 
-      setAuthorMap(
-        authorRes.data.data.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.name }),
-          {}
-        )
-      );
-      setCategoryMap(
-        categoryRes.data.data.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.name }),
-          {}
-        )
-      );
-      setSupplierMap(
-        supplierRes.data.data.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.name }),
-          {}
-        )
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  };
+        setAuthorMap(
+          authorRes.data.data.reduce(
+            (acc, item) => ({ ...acc, [item.id]: item.name }),
+            {}
+          )
+        );
+        setCategoryMap(
+          categoryRes.data.data.reduce(
+            (acc, item) => ({ ...acc, [item.id]: item.name }),
+            {}
+          )
+        );
+        setSupplierMap(
+          supplierRes.data.data.reduce(
+            (acc, item) => ({ ...acc, [item.id]: item.name }),
+            {}
+          )
+        );
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }, 500),
+    [
+      nameFilter,
+      authorIdFilter,
+      categoryIdFilter,
+      supplierIdFilter,
+      orDerByFilter,
+      isDescending,
+      pageIndex,
+      pageSize,
+    ]
+  );
 
+  // Trigger data fetch
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 500);
     fetchData();
-  }, [
-    nameFilter,
-    authorIdFilter,
-    categoryIdFilter,
-    supplierIdFilter,
-    orDerByFilter,
-    isDescending,
-    pageIndex,
-    pageSize,
-  ]);
+  }, [fetchData]);
 
+  // Format currency
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("vi-VN").format(amount) + " VND";
 
+  // Handle filter and sort changes
   const handleFilterChange = (setter) => (event) => {
     setter(event.target.value);
     setPageIndex(1);
@@ -156,7 +174,7 @@ const BookList = () => {
       <Box
         sx={{
           width: "20%",
-          borderRight: "1px solid #ddd",
+          //borderRight: "1px solid #ddd",
           padding: 2,
           backgroundColor: "white",
         }}
@@ -215,10 +233,21 @@ const BookList = () => {
       </Box>
 
       {/* Book List */}
-      <Box sx={{ width: "80%", padding: 3, backgroundColor: "#fff" }}>
+      <Box
+        sx={{
+          width: "80%",
+          padding: 3,
+          backgroundColor: "#fff",
+          marginLeft: 3,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          height: "100%", // Đảm bảo chiếm toàn bộ chiều cao
+        }}
+      >
         {/* Sorting Options */}
         <Box
-          sx={{ display: "flex", justifyContent: "flex-start", mb: 3, pt: 2 }}
+          sx={{ display: "flex", justifyContent: "flex-start", mb: 3, pt: 3 }}
         >
           <FormControl sx={{ size: "small", width: "180px", mb: 2 }}>
             <InputLabel>Sort By</InputLabel>
@@ -236,19 +265,23 @@ const BookList = () => {
         </Box>
 
         {/* Book Grid */}
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ flexGrow: 1 }}>
           {loading ? (
             <CircularProgress />
+          ) : Books.length === 0 ? (
+            <Typography variant="h6" color="error" align="center">
+              Không tìm thấy sách phù hợp với bộ lọc.
+            </Typography>
           ) : (
             Books.map((book) => (
-              <Grid item xs={6} sm={4} md={2.4} key={book.id}>
+              <Grid xs={12} sm={6} md={3} key={book.id}>
                 <Card
                   sx={{
                     boxShadow: "none",
                     flexDirection: "column",
                     height: "300px",
                     width: "200px",
-                    paddingBottom: "10px",
+                    paddingBottom: "20px",
                     "&:hover": {
                       boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
                       transform: "translateY(-5px)",
@@ -358,16 +391,13 @@ const BookList = () => {
             justifyContent: "center",
 
             "& .MuiPaginationItem-root": {
-              backgroundColor: "f0f0f0", // Màu nền cho các item
+              //backgroundColor: "f0f0f0", // Màu nền cho các item
               color: "black", // Màu chữ
               border: "1px solid grey",
-              "&:hover": {
-                backgroundColor: "f0f0f0", // Màu nền khi hover
-              },
             },
             "& .Mui-selected": {
+              color: "#fff", // Màu chữ cho item được chọn]
               backgroundColor: "red", // Màu nền cho item được chọn
-              color: "white", // Màu chữ cho item được chọn]
               border: "none",
             },
           }}
@@ -376,5 +406,4 @@ const BookList = () => {
     </Box>
   );
 };
-
-export default BookList;
+export default BooksList;
