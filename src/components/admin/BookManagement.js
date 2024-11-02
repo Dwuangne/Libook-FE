@@ -20,10 +20,18 @@ import {
     Typography,
     Pagination,
     Divider,
+    TextField,
+    InputAdornment,
+    IconButton,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogActions,
+    Autocomplete,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Search as SearchIcon, FilterList as FilterListIcon } from '@mui/icons-material';
 
 export default function BookManagement() {
     const navigate = useNavigate();
@@ -47,8 +55,11 @@ export default function BookManagement() {
     const [pageIndex, setPageIndex] = useState(1);
 
     const [visible, setVisible] = useState(false);
+    const [keyWord, setKeyWord] = useState("");
+    const [filter, setFilter] = useState({});
+    const [filterDialogOpen, setFilterDialogOpen] = useState(false);
     const [pageSize, setPageSize] = useState(12);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
 
     const fetchData = async () => {
         try {
@@ -72,13 +83,13 @@ export default function BookManagement() {
             const supplierData = supplierRes?.data?.data || [];
             const categoryData = categoryRes?.data?.data || [];
             const bookData = bookRes?.data?.data.bookResponseDTOs || [];
-            const totalPages = bookRes?.data?.data.totalPage || 1;
+            const totalPage = bookRes?.data?.data.totalPage || 1;
 
             setAuthors(authorData);
             setSuppliers(supplierData);
             setCategories(categoryData);
             setBooks(bookData);
-            setTotalPages(totalPages);
+            setTotalPage(totalPage);
 
             const authorMap = authorData.reduce((x, item) => {
                 x[item.id] = item.name;
@@ -126,26 +137,37 @@ export default function BookManagement() {
         setPageIndex(page);
     };
 
-    const sortBooks = (books) => {
-        return books.sort((a, b) => {
-            if (orDerByFilter === "name") {
-                return isDescending
-                    ? b.name.localeCompare(a.name) // Z-A
-                    : a.name.localeCompare(b.name); // A-Z
-            } else if (orDerByFilter === "price") {
-                return isDescending
-                    ? b.price - a.price // Giảm dần
-                    : a.price - b.price; // Tăng dần
-            }
-            return 0;
-        });
+    const handleSearch = () => {
+        setNameFilter(keyWord);
+    };
+
+    const handleSortChange = (e) => {
+        const [orderBy, desc] = e.target.value.split("-");
+        setOrDerByFilter(orderBy);
+        setIsDescending(desc === "true");
+    };
+
+    const applyFilters = () => {
+        setAuthorIdFilter(filter.authorId);
+        setCategoryIdFilter(filter.categoryId);
+        setSupplierIdFilter(filter.supplierId);
+        setPageIndex(1);
+        setFilterDialogOpen(false); // Close the dialog after applying filters
     };
 
     const handleClearFilters = () => {
-        setNameFilter(null);
         setAuthorIdFilter(null);
         setCategoryIdFilter(null);
         setSupplierIdFilter(null);
+        setFilter({});
+    };
+
+    const handleOpenFilterDialog = () => {
+        setFilterDialogOpen(true);
+    };
+
+    const handleCloseFilterDialog = () => {
+        setFilterDialogOpen(false);
     };
 
     return (
@@ -163,7 +185,7 @@ export default function BookManagement() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '10px 30px',
-                    boxShadow: '0 5px 10px rgba(0, 0, 0, 0.05)', // Subtle shadow for depth
+                    boxShadow: '0 5px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
                 }}
             >
                 <Typography
@@ -202,112 +224,88 @@ export default function BookManagement() {
 
             </Box>
 
-            {/* Book Grid */}
             <Box
-                sx={{ display: "flex", backgroundColor: "#fafafa", marginTop: "62px" }}
+                sx={{
+                    backgroundColor: "#ffffff",
+                    padding: "0 px",
+                    display: "flex",
+                    marginTop: "20px",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginX: "auto", // Căn giữa nội dung
+                }}
             >
-                {/* Sidebar Filter */}
+                {/* Search and Filter Section */}
                 <Box
                     sx={{
-                        width: "20%",
-                        position: "relative",
-                        height: "100%",
-                        borderRight: "1px solid #ddd",
-                        padding: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        width: "30%",
+                        maxWidth: "500px",
+                        mb: 3,
+                        backgroundColor: "#fff",
+                        padding: "8px",
+                        borderRadius: "8px",
+                        boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
                     }}
                 >
-                    <Typography variant="h6" padding={2}>
-                        Filter Options
-                    </Typography>
-
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Author</InputLabel>
-                        <Select
-                            value={authorIdFilter}
-                            onChange={(e) => setAuthorIdFilter(e.target.value)}
-                            label="Author"
-                        >
-                            <MenuItem value="">All Authors</MenuItem>
-                            {authors.map((author) => (
-                                <MenuItem key={author.id} value={author.id}>
-                                    {author.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Category</InputLabel>
-                        <Select
-                            value={categoryIdFilter}
-                            onChange={(e) => setCategoryIdFilter(e.target.value)}
-                            label="Category"
-                        >
-                            <MenuItem value="">All Categories</MenuItem>
-                            {categories.map((category) => (
-                                <MenuItem key={category.id} value={category.id}>
-                                    {category.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Supplier</InputLabel>
-                        <Select
-                            value={supplierIdFilter}
-                            onChange={(e) => setSupplierIdFilter(e.target.value)}
-                            label="Supplier"
-                        >
-                            <MenuItem value="">All Suppliers</MenuItem>
-                            {suppliers.map((supplier) => (
-                                <MenuItem key={supplier.id} value={supplier.id}>
-                                    {supplier.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <Button
-                        variant="contained"
-                        backgroundColor="#003ce9"
+                    <TextField
                         fullWidth
-                        onClick={handleClearFilters}
-                    >
-                        Clear
-                    </Button>
+                        variant="outlined"
+                        size="small"
+                        placeholder="Search books by name"
+                        value={keyWord}
+                        onChange={(e) => setKeyWord(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '8px',
+                                '&.Mui-focused': {
+                                    boxShadow: '0 0 0 3px rgba(0,0,0,0.1)',
+                                },
+                            },
+                        }}
+                    />
+                    <IconButton onClick={handleSearch} color="primary">
+                        <SearchIcon sx={{ color: '#3F51B5' }}/>
+                    </IconButton>
+                    <IconButton onClick={handleOpenFilterDialog} color="primary">
+                        <FilterListIcon sx={{ color: '#3F51B5' }}/>
+                    </IconButton>
                 </Box>
 
-                {/* Book List */}
-                <Box sx={{ width: "80%", padding: 3, height: "100%" }}>
-                    {/* Dropdown Menu (Sorting Options) */}
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-                        <FormControl variant="outlined" sx={{ minWidth: "100px", mb: 2 }}>
-                            <InputLabel>Sort By</InputLabel>
-                            <Select
-                                size="small"
-                                value={`${orDerByFilter}-${isDescending}`}
-                                onChange={(e) => {
-                                    const [orderBy, desc] = e.target.value.split("-");
-                                    setOrDerByFilter(orderBy);
-                                    setIsDescending(desc === "true");
-                                }}
-                                label="Sort By"
-                            >
-                                <MenuItem value="name-false">A-Z</MenuItem>
-                                <MenuItem value="name-true">Z-A</MenuItem>
-                                <MenuItem value="price-false">Price Low to High</MenuItem>
-                                <MenuItem value="price-true">Price High to Low</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
 
+                {/* Book List */}
+                <Box
+                    sx={{
+                        width: "100%",
+                        maxWidth: "1500px", // Giới hạn chiều rộng tối đa cho danh sách sách
+                        backgroundColor: "#fff",
+                        padding: 3,
+                        borderRadius: "8px",
+                        boxShadow: "2px 4px 6px rgba(0,0,0,0.2)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
                     {/* Book Grid */}
-                    <Grid container spacing={2}>
+                    <Grid container spacing={2} sx={{ flexGrow: 1, justifyContent: "center" }}>
                         {loading ? (
-                            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
-                                <CircularProgress size={60} thickness={4} color="primary" />
-                            </Box>
+                            <CircularProgress />
+                        ) : books.length === 0 ? (
+                            <Typography variant="h6" color="error" align="center">
+                                Không tìm thấy sách phù hợp với bộ lọc.
+                            </Typography>
                         ) : (
                             books.map((book) => (
-                                <Grid item xs={6} sm={4} md={2.4} key={book.id}>
+                                <Grid xs={12} sm={6} md={3} key={book.id}>
                                     <Card
                                         sx={{
                                             boxShadow: "none",
@@ -316,7 +314,7 @@ export default function BookManagement() {
                                             width: "200px",
                                             "&:hover": {
                                                 boxShadow: "0px 6px 30px rgba(0, 0, 0, 0.15)",
-                                                transform: "translateY(-8px)",
+                                                transform: "translateY(-5px)",
                                                 transition: "transform 0.25s ease, box-shadow 0.25s ease",
                                             },
                                         }}
@@ -360,33 +358,30 @@ export default function BookManagement() {
                                                 variant="h7"
                                                 sx={{
                                                     textAlign: "left",
-                                                    width: "100%",
                                                     height: "3rem",
                                                     overflow: "hidden",
                                                     textOverflow: "ellipsis",
                                                     lineHeight: "1.5rem",
-                                                    whiteSpace: "normal",
                                                 }}
                                             >
                                                 {book.name}
                                             </Typography>
-
                                             <Box
                                                 sx={{
                                                     display: "flex",
-                                                    justifyContent: "left",
                                                     alignItems: "center",
                                                     marginTop: 1,
                                                 }}
                                             >
                                                 <Typography
-                                                    variant="h6"
+                                                    variant="h7"
                                                     color="error"
                                                     sx={{ fontWeight: "bold" }}
                                                 >
-                                                    {formatCurrency(book.price - (book.price * book.precentDiscount) / 100)}
+                                                    {formatCurrency(
+                                                        book.price - (book.price * book.precentDiscount) / 100
+                                                    )}
                                                 </Typography>
-
                                                 {book.precentDiscount > 0 && (
                                                     <Box
                                                         sx={{
@@ -402,14 +397,13 @@ export default function BookManagement() {
                                                     </Box>
                                                 )}
                                             </Box>
-
                                             {book.precentDiscount > 0 && (
                                                 <Typography
                                                     variant="body2"
                                                     sx={{
-                                                        textDecoration: "line-through",
                                                         color: "gray",
-                                                        textAlign: "left",
+                                                        textDecoration: "line-through",
+                                                        fontWeight: "light",
                                                     }}
                                                 >
                                                     {formatCurrency(book.price)}
@@ -423,24 +417,96 @@ export default function BookManagement() {
                     </Grid>
 
                     {/* Pagination */}
-                    <Box
+                    <Pagination
+                        count={totalPage}
+                        page={pageIndex}
+                        onChange={handlePageChange}
+                        size="large"
                         sx={{
-                            mt: 3,
+                            marginTop: "35px",
                             display: "flex",
                             justifyContent: "center",
-                            alignItems: "center",
                         }}
-                    >
-                        <Pagination
-                            color="primary"
-                            count={totalPages}
-                            page={pageIndex}
-                            onChange={handlePageChange}
-                        />
-                    </Box>
+                    />
                 </Box>
-
             </Box>
+
+            {/* Filter Dialog */}
+            <Dialog open={filterDialogOpen} onClose={handleCloseFilterDialog} fullWidth maxWidth="sm">
+                <DialogTitle sx={{ fontWeight: 'bold', fontSize: '1.5rem', color: '#3F51B5' }}>
+                    Filter
+                </DialogTitle>
+                <DialogContent dividers>
+                    {/* Author Autocomplete */}
+                    <Autocomplete
+                        options={authors}
+                        getOptionLabel={(option) => option.name}
+                        value={authors.find((author) => author.id === filter.authorId) || null}
+                        onChange={(e, newValue) =>
+                            setFilter((prevFilter) => ({
+                                ...prevFilter,
+                                authorId: newValue ? newValue.id : '',
+                            }))
+                        }
+                        renderInput={(params) => (
+                            <TextField {...params} label="Author" variant="outlined" fullWidth />
+                        )}
+                        sx={{ mb: 2 }}
+                    />
+
+                    {/* Category Autocomplete */}
+                    <Autocomplete
+                        options={categories}
+                        getOptionLabel={(option) => option.name}
+                        value={categories.find((category) => category.id === filter.categoryId) || null}
+                        onChange={(e, newValue) =>
+                            setFilter((prevFilter) => ({
+                                ...prevFilter,
+                                categoryId: newValue ? newValue.id : '',
+                            }))
+                        }
+                        renderInput={(params) => (
+                            <TextField {...params} label="Category" variant="outlined" fullWidth />
+                        )}
+                        sx={{ mb: 2 }}
+                    />
+
+                    {/* Supplier Autocomplete */}
+                    <Autocomplete
+                        options={suppliers}
+                        getOptionLabel={(option) => option.name}
+                        value={suppliers.find((supplier) => supplier.id === filter.supplierId) || null}
+                        onChange={(e, newValue) =>
+                            setFilter((prevFilter) => ({
+                                ...prevFilter,
+                                supplierId: newValue ? newValue.id : '',
+                            }))
+                        }
+                        renderInput={(params) => (
+                            <TextField {...params} label="Supplier" variant="outlined" fullWidth />
+                        )}
+                        sx={{ mb: 2 }}
+                    />
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={handleClearFilters} color="secondary" variant="outlined">
+                        Clear Filters
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            applyFilters(); // function to trigger filtering
+                            handleCloseFilterDialog();
+                        }}
+                        color="primary"
+                        variant="contained"
+                        sx={{ backgroundColor: '#3F51B5', color: '#fff', '&:hover': { backgroundColor: '#303f9f' } }}
+                    >
+                        Apply
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </Box>
     );
 }
