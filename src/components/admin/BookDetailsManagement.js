@@ -35,9 +35,9 @@ export default function BookDetailsManagement() {
 
     //Add new product
     const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [remain, setRemain] = useState('');
-    const [percentDiscount, setPercentDiscount] = useState('');
+    const [price, setPrice] = useState(0);
+    const [remain, setRemain] = useState(0);
+    const [percentDiscount, setPercentDiscount] = useState(0);
     const [authorId, setAuthorId] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [supplierId, setSupplierId] = useState('');

@@ -17,10 +17,12 @@ import {
     TextField,
     IconButton,
     Box,
-    CircularProgress
+    CircularProgress,
+    TablePagination,
+    InputAdornment,
 } from '@mui/material';
 import { toast } from "react-toastify";
-import { Add as AddIcon, Edit as EditIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Close as CloseIcon, Search as SearchIcon } from '@mui/icons-material';
 
 import { GetAllVouchersApi, UpdateRemainVoucherApi, AddVoucherApi } from "../../api/VoucherApi";
 
@@ -32,6 +34,18 @@ export default function VoucherManagement() {
     const [editingVoucher, setEditingVoucher] = useState(null);
     const [addingVoucher, setAddingVoucher] = useState(null);
     const [errors, setErrors] = useState({});
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [searchKeyword, setSearchKeyword] = useState("");
+
+    const filteredVoucher = vouchers.filter((item) =>
+        item.title.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
+
+    const indexOfLastItem = (page + 1) * rowsPerPage;
+    const indexOfFirstItem = indexOfLastItem - rowsPerPage;
+    const currentItems = filteredVoucher.slice(indexOfFirstItem, indexOfLastItem);
+
     const fetchData = async () => {
         try {
             const voucherRes = await GetAllVouchersApi();
@@ -130,6 +144,21 @@ export default function VoucherManagement() {
         return valid;
     };
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleSearchChange = (event) => {
+        const value = event.target.value;
+        setSearchKeyword(value);
+        setPage(0); // Reset to the first page when search changes
+    };
+
     return (
         <Box
             sx={{
@@ -188,10 +217,70 @@ export default function VoucherManagement() {
                         <CircularProgress />
                     </Box>
                 ) : (
-                    <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-                        <Table>
+
+                    <TableContainer
+                        component={Paper}
+                        sx={{
+                            marginTop: '20px',
+                            borderRadius: '12px',
+                            boxShadow: '2px 4px 6px rgba(0,0,0,0.8)',
+                            padding: '16px'
+                        }}
+                    >
+                        <Box
+                            display="flex"
+                            justifyContent="left"
+                            alignItems="center"
+                            sx={{ marginBottom: '16px' }}
+                        >
+                            <TextField
+                                variant="outlined"
+                                size="small"
+                                value={searchKeyword}
+                                onChange={handleSearchChange}
+                                placeholder="Tìm kiếm theo mã voucher"
+                                sx={{
+                                    width: { xs: '100%', sm: '60%', md: '40%' },
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '8px',
+                                        '&.Mui-focused': {
+                                            boxShadow: '0 0 0 3px rgba(0,0,0,0.2)',
+                                        }
+                                    }
+                                }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon
+                                                color="action"
+                                                sx={{ color: '#3F51B5' }}
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: searchKeyword && (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setSearchKeyword("")}
+                                                size="small"
+                                                edge="end"
+                                            >
+                                                <CloseIcon color="error" />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Box>
+                        <Table sx={{ minWidth: 650 }}>
                             <TableHead>
-                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableRow sx={{
+                                    backgroundColor: '#3F51B5',
+                                    '& .MuiTableCell-root': {
+                                        color: 'white',
+                                        fontWeight: 'bold'
+                                    },
+                                    borderRadius: '8px',
+                                }}>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Discount</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }}>Start Date</TableCell>
@@ -201,8 +290,18 @@ export default function VoucherManagement() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {vouchers.map((voucher) => (
-                                    <TableRow key={voucher.voucherId} hover>
+                                {currentItems.map((voucher) => (
+                                    <TableRow
+                                        key={voucher.voucherId}
+                                        hover
+                                        sx={{
+                                            '&:last-child td, &:last-child th': { border: 0 },
+                                            '&:hover': {
+                                                backgroundColor: '#fff1f5',
+                                                transition: 'background-color 0.3s ease'
+                                            }
+                                        }}
+                                    >
                                         <TableCell>{voucher.title}</TableCell>
                                         <TableCell>{formatCurrency(voucher.discount)}</TableCell>
                                         <TableCell>{new Date(voucher.startDate).toLocaleDateString()}</TableCell>
@@ -216,6 +315,27 @@ export default function VoucherManagement() {
                                     </TableRow>
                                 ))}
                             </TableBody>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                component="div"
+                                count={filteredVoucher.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                sx={{
+                                    '& .MuiTablePagination-toolbar': {
+                                        justifyContent: 'center',
+                                        backgroundColor: '#fff',
+                                        borderTop: '1px solid #e0e0e0',
+                                        borderRadius: '0 0 12px 12px'
+                                    }
+                                }}
+                                labelRowsPerPage="Num row:"
+                                labelDisplayedRows={({ from, to, count }) =>
+                                    `${from}-${to} trên ${count}`
+                                }
+                            />
                         </Table>
                     </TableContainer>
                 )}
