@@ -2,9 +2,15 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { loginApi, loginGoogleApi } from "../../api/UserApi";
 import { jwtDecode } from "jwt-decode";
+
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-//UI
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../redux/AuthSlice"; // Import Redux slice
+
+// UI Components
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import Input from "@mui/material/Input";
@@ -15,35 +21,31 @@ import Divider from "@mui/material/Divider";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
 const Login = () => {
-  window.document.tiltle = "Sign In";
+  window.document.title = "Sign In";
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   const passwordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Điều hướng khi đã đăng nhập
   useEffect(() => {
-    const jwtToken = localStorage.getItem("accessToken");
-
-    if (jwtToken) {
-      const decodedAccessToken = jwtDecode(jwtToken);
-      const roleHasLoggined =
-        decodedAccessToken[
-          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-        ];
-      if (roleHasLoggined === "Admin") {
+    if (isLoggedIn) {
+      if (user.role === "Admin") {
         navigate("/admin");
-      } else if (roleHasLoggined === "Customer") {
+      } else if (user.role === "Customer") {
         navigate("/");
-        window.location.reload();
       }
     }
-  }, []);
+  }, [isLoggedIn, user, navigate]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -56,65 +58,65 @@ const Login = () => {
       return;
     }
 
+    setLoading(true);
     loginApi(username, password)
       .then((res) => {
-        const accessToken = res?.data?.data;
-        handleLoginSuccess(accessToken.jwtToken); // Gọi hàm xử lý token chung
-        setTimeout(() => {
-          setLoading(true);
-        }, 1000);
+        const accessToken = res?.data?.data?.jwtToken;
+        const decodedToken = jwtDecode(accessToken);
+
+        // Dispatch Redux action để cập nhật trạng thái đăng nhập
+        dispatch(
+          login({
+            token: accessToken,
+            username:
+              decodedToken[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+              ],
+            role: decodedToken[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ],
+          })
+        );
+
+        toast.success("Login successfully", { autoClose: 1500 });
       })
       .catch((err) => {
         console.error("Sign In Failed", err);
         const errorMessage = err.response?.data || "Sign In Failed.";
         toast.error(errorMessage, { autoClose: 1500 });
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleGoogleLogin = (token) => {
+    setLoading(true);
     loginGoogleApi(token)
       .then((res) => {
-        const accessToken = res?.data?.data;
-        handleLoginSuccess(accessToken.jwtToken); // Gọi hàm xử lý token chung
+        const accessToken = res?.data?.data?.jwtToken;
+        const decodedToken = jwtDecode(accessToken);
+
+        // Dispatch Redux action để cập nhật trạng thái đăng nhập
+        dispatch(
+          login({
+            token: accessToken,
+            username:
+              decodedToken[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+              ],
+            role: decodedToken[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ],
+          })
+        );
+
+        toast.success("Google Login successfully", { autoClose: 1500 });
       })
       .catch((err) => {
         console.error("Google Login Failed", err);
         const errorMessage = err.response?.data || "Google Sign In Failed.";
         toast.error(errorMessage, { autoClose: 1500 });
-      });
-  };
-
-  const handleLoginSuccess = (jwtToken) => {
-    const decodedAccessToken = jwtDecode(jwtToken);
-    const username = decodedAccessToken
-      ? decodedAccessToken[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-        ]
-      : null;
-    const role =
-      decodedAccessToken[
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-      ];
-
-    // Lưu token và thông tin người dùng vào localStorage
-    localStorage.setItem("accessToken", jwtToken);
-    localStorage.setItem("username", username);
-    localStorage.setItem("role", role);
-    // Hiển thị thông báo thành công
-    toast.success("Login successfully", { autoClose: 1500 });
-
-    // Điều hướng dựa trên vai trò người dùng
-    setTimeout(() => {
-      console.log("Decoded Access Token", decodedAccessToken);
-      if (role === "Admin") {
-        navigate("/admin");
-      } else if (role === "Customer") {
-        navigate("/");
-      } else {
-        navigate("/signin");
-      }
-    }, 1000);
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -135,8 +137,6 @@ const Login = () => {
       ) : (
         <div
           style={{
-            // backgroundImage:
-            //     "url('https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-simple-cartoon-childlike-mother-and-baby-image_11542.jpg')",
             height: "85vh",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
@@ -151,12 +151,8 @@ const Login = () => {
               width: "50%",
               animation: "slideLogin 1s ease-in-out",
               "@keyframes slideLogin": {
-                from: {
-                  transform: "translateX(-50%)",
-                },
-                to: {
-                  transform: "translateX(0)",
-                },
+                from: { transform: "translateX(-50%)" },
+                to: { transform: "translateX(0)" },
               },
             }}
           >
@@ -177,7 +173,7 @@ const Login = () => {
                     fontWeight: "700",
                   }}
                 >
-                  Sign In{" "}
+                  Sign In
                 </h1>
               </div>
               <form onSubmit={handleSubmit}>
@@ -194,7 +190,7 @@ const Login = () => {
                   </Typography>
                   <Input
                     id="username"
-                    type="username"
+                    type="text"
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -234,7 +230,6 @@ const Login = () => {
                     }}
                   />
                 </FormControl>
-
                 <FormControl sx={{ mb: 3 }} fullWidth>
                   <Typography
                     sx={{
@@ -297,9 +292,6 @@ const Login = () => {
                     }
                   />
                 </FormControl>
-
-                {/* <Typography sx={{textAlign: "left", "&:hover":{color: "#ff469e", cursor: "pointer"}}}>Forgot Password?</Typography> */}
-
                 <div style={{ textAlign: "center", marginTop: "1rem" }}>
                   <Button
                     variant="contained"
@@ -324,17 +316,7 @@ const Login = () => {
                   >
                     Login
                   </Button>
-
-                  <Divider
-                    textAlign="center"
-                    sx={{
-                      width: "50%", // Chiều rộng ngắn hơn
-                      margin: "auto",
-                    }}
-                  >
-                    or
-                  </Divider>
-
+                  <Divider sx={{ my: 3 }}>or</Divider>
                   <Box
                     sx={{
                       display: "flex",
@@ -357,7 +339,6 @@ const Login = () => {
                       }}
                     />
                   </Box>
-
                   <div
                     style={{
                       marginTop: "1rem",
