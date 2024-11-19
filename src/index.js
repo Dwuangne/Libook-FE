@@ -5,15 +5,19 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Provider } from "react-redux";
+import store from "../src/redux/Store"; // Đường dẫn tới store của bạn
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.Fragment>
-    <BrowserRouter>
-      <GoogleOAuthProvider clientId="1062597609169-5i3cpmrtviu3msoio6va5a9ruphf2ui7.apps.googleusercontent.com">
-        <App />
-      </GoogleOAuthProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <GoogleOAuthProvider clientId="1062597609169-5i3cpmrtviu3msoio6va5a9ruphf2ui7.apps.googleusercontent.com">
+          <App />
+        </GoogleOAuthProvider>
+      </BrowserRouter>
+    </Provider>
   </React.Fragment>
 );
 
