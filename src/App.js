@@ -12,6 +12,10 @@ import HomePage from "./components/general/homePage";
 import Chatbox from "./components/general/Chatbox";
 import BookList from "./components/general/BookList";
 import BookDetails from "./components/general/BookDetails";
+import Cart from "./components/general/Cart";
+
+//customer
+import Checkout from "./components/general/Checkout";
 
 //admin
 import AdminLayout from "./components/admin/AdminLayout";
@@ -49,10 +53,12 @@ function App() {
         <Route path="/signup" element={redirectIfAdmin(<SignUp />)} />
         <Route path="/signin" element={redirectIfAdmin(<SignIn />)} />
         <Route path="/:bookId" element={redirectIfAdmin(<BookDetails />)} />
+        <Route path="/cart" element={redirectIfAdmin(<Cart />)} />
 
         {/* Customer Protected Routes */}
         <Route element={<ProtectedRoute allowedRole="Customer" />}>
           {/* Customer routes here */}
+          <Route path="/checkout" element={<Checkout />} />
         </Route>
 
         {/* Admin Protected Routes */}
