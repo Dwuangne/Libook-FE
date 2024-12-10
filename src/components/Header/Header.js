@@ -11,6 +11,7 @@ import {
   Avatar,
   Button,
   ListItemIcon,
+  Badge, // Import Badge từ Material-UI
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -20,11 +21,12 @@ import {
 } from "@mui/icons-material";
 import { styled, alpha } from "@mui/material/styles";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux"; // Import từ Redux
-import { logout } from "../../redux/AuthSlice"; // Slice logout
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/AuthSlice";
+import { selectCartAmount } from "../../redux/CartSlice"; // Import selector từ cartSlice
 import logoImg from "../../assets/Logo_Libook_RemovedBg.png";
-import { Search } from "lucide-react";
 
+// Các styles và components giữ nguyên
 const StyledSearch = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "25px",
@@ -61,7 +63,10 @@ const Header = () => {
   const dispatch = useDispatch();
   const { isLoggedIn, username, avatarUrl } = useSelector(
     (state) => state.auth
-  ); // Lấy dữ liệu từ Redux
+  );
+
+  // Lấy số lượng sản phẩm trong giỏ hàng
+  const cartAmount = useSelector(selectCartAmount);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -76,7 +81,6 @@ const Header = () => {
   const NameOfUser = truncateUsername(
     useSelector((state) => state.auth.user.username)
   );
-  console.log(">>>>>>>>>>>>>> username", NameOfUser);
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -86,7 +90,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    dispatch(logout()); // Gọi action logout
+    dispatch(logout());
     navigate("/");
   };
 
@@ -133,7 +137,7 @@ const Header = () => {
               src={logoImg}
               alt="LiBook"
               style={{
-                height: "60px", // Tăng kích thước logo
+                height: "60px",
                 transition: "all 0.3s ease",
               }}
             />
@@ -148,40 +152,32 @@ const Header = () => {
               height: "40px",
               display: "flex",
               alignItems: "center",
-              borderRadius: "25px", // Đảm bảo cả ô tìm kiếm có viền tròn
+              borderRadius: "25px",
               position: "relative",
               border: "1px solid grey",
             }}
           >
-            {/* Ô nhập liệu */}
             <StyledInputBase
               placeholder="Search book's name ..."
               inputProps={{ "aria-label": "search" }}
               onChange={(e) => setSearchQuery(e.target.value)}
               sx={{
-                width: "100%", // Đảm bảo ô nhập chiếm toàn bộ không gian bên trong Search
-                paddingLeft: "16px", // Khoảng cách bên trái, cho phép người dùng thấy chữ dễ dàng
-                "& .MuiInputBase-input": {
-                  marginLeft: "0", // Bỏ margin mặc định nếu có
-                },
-                border: "none", // Bỏ viền bên trong input
+                width: "100%",
+                paddingLeft: "16px",
+                border: "none",
               }}
             />
-
-            {/* Icon Tìm kiếm */}
             <IconButton
               type="submit"
               sx={{
-                position: "absolute", // Đặt icon tuyệt đối bên trong ô tìm kiếm
-                right: "8px", // Căn icon sát bên phải
-                top: "50%", // Căn icon theo chiều dọc
-                transform: "translateY(-50%)", // Căn giữa chiều dọc
+                position: "absolute",
+                right: "8px",
+                top: "50%",
+                transform: "translateY(-50%)",
                 backgroundColor: "black",
-                width: "32px", // Kích thước icon
+                width: "32px",
                 height: "32px",
-                "&:hover": {
-                  backgroundColor: "#333333", // Thêm hiệu ứng hover
-                },
+                "&:hover": { backgroundColor: "#333333" },
                 transition: "background-color 0.2s",
               }}
             >
@@ -198,7 +194,9 @@ const Header = () => {
               to="/cart"
               sx={{ mr: 2 }}
             >
-              <ShoppingCart sx={{ fontSize: 28 }} />
+              <Badge badgeContent={cartAmount} color="error">
+                <ShoppingCart sx={{ fontSize: 28 }} />
+              </Badge>
             </IconButton>
             {isLoggedIn ? (
               <>

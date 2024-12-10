@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Slider from "react-slick"; // Make sure to install react-slick and slick-carousel
 import replaceImg from "../../assets/Blue_Book.jpg";
 import { GetAuthorApi } from "../../api/AuthorApi";
 import { GetSupplierApi } from "../../api/Supplier";
@@ -17,11 +16,16 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/CartSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BookDetail = () => {
   const params = useParams();
   const bookId = params.bookId;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [book, setBook] = useState({});
   const [loading, setLoading] = useState(true);
   const [authorMap, setAuthorMap] = useState({});
@@ -94,6 +98,25 @@ const BookDetail = () => {
     }
   };
 
+  const handleAddToCart = () => {
+    // Dispatch action to add book to cart with selected quantity
+    dispatch(
+      addToCart({
+        book,
+        quantity,
+      })
+    );
+    toast.success("Thêm vào giỏ hàng thành công!", {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -101,14 +124,6 @@ const BookDetail = () => {
   if (!book) {
     return <Typography variant="h6">Book not found</Typography>;
   }
-
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-  };
 
   return (
     <Box
@@ -134,14 +149,12 @@ const BookDetail = () => {
         <CardMedia
           component="img"
           image={selectedImage || replaceImg}
-          // alt={book.name || "No name available"}
           sx={{
             maxWidth: "100%",
             height: "auto",
             maxHeight: 300,
             objectFit: "contain",
             mb: 2,
-            // border: "1px solid #ccc",
             padding: "8px",
             borderRadius: "8px",
           }}
@@ -210,6 +223,10 @@ const BookDetail = () => {
             Thể loại: {categoryMap[book.categoryId] || "Unknown Category"}
           </Typography>
 
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Số lượng trong kho: {book.remain}
+          </Typography>
+
           <Box
             sx={{
               display: "flex",
@@ -254,47 +271,34 @@ const BookDetail = () => {
           )}
 
           {/* Chọn số lượng */}
-          {/* <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
-          <Typography variant="body1" sx={{ mr: 2 }}>
-            Số lượng:
-          </Typography>
-          <IconButton onClick={() => handleQuantityChange("decrease")}>
-            <RemoveIcon />
-          </IconButton>
-          <TextField
-            value={quantity}
-            size="small"
-            sx={{ width: 40, textAlign: "center" }}
-            inputProps={{ style: { textAlign: "center" } }}
-          />
-          <IconButton onClick={() => handleQuantityChange("increase")}>
-            <AddIcon />
-          </IconButton>
-        </Box> */}
+          <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
+            <Typography variant="body1" sx={{ mr: 2 }}>
+              Số lượng:
+            </Typography>
+            <IconButton onClick={() => handleQuantityChange("decrease")}>
+              <RemoveIcon />
+            </IconButton>
+            <TextField
+              value={quantity}
+              size="small"
+              sx={{ width: 40, textAlign: "center" }}
+              inputProps={{ style: { textAlign: "center" } }}
+            />
+            <IconButton onClick={() => handleQuantityChange("increase")}>
+              <AddIcon />
+            </IconButton>
+          </Box>
 
           {/* Nút hành động */}
-          {/* <Box sx={{ display: "flex", gap: 2 }}>
-          <Button variant="contained" sx={{ flex: 1 }}>
-            Thêm vào giỏ hàng
-          </Button>
-          <Button variant="contained" color="error" sx={{ flex: 1 }}>
-            Đặt Trước
-          </Button>
-        </Box> */}
-        </Box>
-        <Box
-          sx={{
-            marginTop: "20px",
-            backgroundColor: "#fff",
-            borderRadius: "8px",
-            flex: 2,
-            pl: 3,
-            paddingTop: "10px",
-            paddingBottom: "10px",
-          }}
-        >
-          <Typography variant="h5">Mô tả chi tiết sản phẩm:</Typography>
-          <Typography variant="body1">{book.description}</Typography>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              sx={{ flex: 1 }}
+              onClick={handleAddToCart}
+            >
+              Thêm vào giỏ hàng
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
