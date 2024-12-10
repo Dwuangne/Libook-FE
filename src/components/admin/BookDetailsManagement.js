@@ -36,149 +36,154 @@ const MAX_SIZE_MB = 2; // Limit the size to 2MB (for example)
 const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
 
 export default function BookDetailsManagement() {
-  const { state } = useLocation();
-  const bookId = state?.bookId;
-  const [uploading, setUploading] = useState(false); // State for uploading process
-  const [loading, setLoading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadedUrls, setUploadedUrls] = useState([]); // Uploaded image URLs from Firebase
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation popup
-  const [imageToDelete, setImageToDelete] = useState(null); // Store image to be deleted
-  const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
-  const combinedImages = [
-    ...uploadedUrls,
-    ...selectedFiles.map((fileObj) => fileObj.url),
-  ];
 
-  //Add new product
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [remain, setRemain] = useState("");
-  const [percentDiscount, setPercentDiscount] = useState("");
-  const [authorId, setAuthorId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [supplierId, setSupplierId] = useState("");
-  // const [isActive, setIsActive] = useState(true);
-  const [description, setDescription] = useState("");
+    const { state } = useLocation();
+    const bookId = state?.bookId;
+    const [uploading, setUploading] = useState(false); // State for uploading process
+    const [loading, setLoading] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [uploadedUrls, setUploadedUrls] = useState([]); // Uploaded image URLs from Firebase
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete confirmation popup
+    const [imageToDelete, setImageToDelete] = useState(null); // Store image to be deleted
+    const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
+    const combinedImages = [...uploadedUrls, ...selectedFiles.map(fileObj => fileObj.url)];
 
-  //Mapper
-  const [uploadedUrlsMap, setUploadedUrlsMap] = useState([]);
+    //Add new product
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState(0);
+    const [remain, setRemain] = useState(0);
+    const [percentDiscount, setPercentDiscount] = useState(0);
+    const [authorId, setAuthorId] = useState('');
+    const [categoryId, setCategoryId] = useState('');
+    const [supplierId, setSupplierId] = useState('');
+    // const [isActive, setIsActive] = useState(true);
+    const [description, setDescription] = useState('');
 
-  const [authors, setAuthors] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
-  const [book, setBook] = useState({});
+    //Mapper
+    const [uploadedUrlsMap, setUploadedUrlsMap] = useState([]);
 
-  const fetchData = async () => {
-    try {
-      const [authorRes, supplierRes, categoryRes] = await Promise.all([
-        GetAuthorApi(),
-        GetSupplierApi(),
-        GetCategoryApi(),
-      ]);
+    const [authors, setAuthors] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
+    const [book, setBook] = useState({});
 
-      const authorData = authorRes?.data?.data || [];
-      const supplierData = supplierRes?.data?.data || [];
-      const categoryData = categoryRes?.data?.data || [];
+    const fetchData = async () => {
+        try {
+            const [authorRes, supplierRes, categoryRes] =
+                await Promise.all([
+                    GetAuthorApi(),
+                    GetSupplierApi(),
+                    GetCategoryApi(),
+                ]);
 
-      setAuthors(authorData);
-      setSuppliers(supplierData);
-      setCategories(categoryData);
-      if (bookId) {
-        const bookDetailRes = await GetBookByIdApi(bookId);
-        const bookDetailData = bookDetailRes?.data.data || {};
-        setName(bookDetailData.name);
-        setPrice(bookDetailData.price);
-        setRemain(bookDetailData.remain);
-        setPercentDiscount(bookDetailData.precentDiscount);
-        setAuthorId(bookDetailData.authorId);
-        setCategoryId(bookDetailData.categoryId);
-        setSupplierId(bookDetailData.supplierId);
-        setDescription(bookDetailData.description);
-        setUploadedUrls(
-          bookDetailData.bookImages.map((image) => image.bookImageUrl)
-        );
+            const authorData = authorRes?.data?.data || [];
+            const supplierData = supplierRes?.data?.data || [];
+            const categoryData = categoryRes?.data?.data || [];
 
-        const uploadedUrlsMap = bookDetailData.bookImages.reduce((x, item) => {
-          x[item.id] = item.bookImageUrl;
-          return x;
-        }, {});
-        setUploadedUrlsMap(uploadedUrlsMap);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    setLoading(true);
-    fetchData().then(() => {
-      setLoading(false);
-    });
-  }, []);
-  // Handle image file selection and auto-upload to Firebase
-  const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files);
-    for (const file of files) {
-      // Check file type
-      if (!allowedTypes.includes(file.type)) {
-        toast.error(
-          `Unsupported file type: ${file.type}. Only JPEG and PNG are allowed.`
-        );
-        return;
-      }
-      // Check file size (converting to MB)
-      const fileSizeMB = file.size / (1024 * 1024);
-      if (fileSizeMB > MAX_SIZE_MB) {
-        toast.error(`File size exceeds ${MAX_SIZE_MB}MB: ${file.name}`);
-        return;
-      }
-    }
-    if (
-      selectedFiles.length + uploadedUrls.length + files.length >
-      MAX_IMAGES
-    ) {
-      toast.error(`You can only upload ${MAX_IMAGES} images.`, {
-        autoClose: 2000,
-      });
-      return;
-    }
-    const newSelectedFiles = files.map((file) => ({
-      file, // Lưu đối tượng file thực tế
-      url: URL.createObjectURL(file), // Tạo URL tạm thời để hiển thị (không dùng để upload)
-    }));
+            setAuthors(authorData);
+            setSuppliers(supplierData);
+            setCategories(categoryData);
+            if (bookId) {
+                const bookDetailRes = await GetBookByIdApi(bookId);
+                const bookDetailData = bookDetailRes?.data.data || {};
+                setName(bookDetailData.name);
+                setPrice(bookDetailData.price);
+                setRemain(bookDetailData.remain);
+                setPercentDiscount(bookDetailData.precentDiscount);
+                setAuthorId(bookDetailData.authorId);
+                setCategoryId(bookDetailData.categoryId);
+                setSupplierId(bookDetailData.supplierId);
+                setDescription(bookDetailData.description);
+                setUploadedUrls(bookDetailData.bookImages.map((image) => image.bookImageUrl));
 
-    setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
-  };
+                const uploadedUrlsMap = bookDetailData.bookImages.reduce((x, item) => {
+                    x[item.id] = item.bookImageUrl;
+                    return x;
+                }, {});
+                setUploadedUrlsMap(uploadedUrlsMap);
 
-  // Handle delete confirmation
-  const openDeleteDialog = (imageUrl) => {
-    setImageToDelete(imageUrl);
-    setDeleteDialogOpen(true);
-  };
+            }
 
-  // Confirm delete image
-  const handleConfirmDelete = async () => {
-    if (uploadedUrls.includes(imageToDelete)) {
-      // If the image is already uploaded to Firebase and DB
-      try {
-        await DeleteImageFromFirebase(imageToDelete);
-        await DeleteBookImageByIdApi(
-          Object.keys(uploadedUrlsMap).find(
-            (key) => uploadedUrlsMap[key] === imageToDelete
-          )
-        );
-        setUploadedUrls(uploadedUrls.filter((url) => url !== imageToDelete));
-        console.log("Image deleted from Firebase:", imageToDelete);
-      } catch (err) {
-        console.error(err.message);
-      }
-    } else {
-      // If the image is still in selectedFiles (not yet uploaded)
-      setSelectedFiles(
-        selectedFiles.filter((fileObj) => fileObj.url !== imageToDelete)
-      );
-      console.log("Image deleted from selected files:", imageToDelete);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    useEffect(() => {
+        setLoading(true);
+        fetchData().then(() => {
+            setLoading(false);
+        });
+    }, []);
+    // Handle image file selection and auto-upload to Firebase
+    const handleImageChange = async (e) => {
+
+        const files = Array.from(e.target.files);
+        for (const file of files) {
+            // Check file type
+            if (!allowedTypes.includes(file.type)) {
+                toast.error(`Unsupported file type: ${file.type}. Only JPEG and PNG are allowed.`);
+                return;
+            }
+            // Check file size (converting to MB)
+            const fileSizeMB = file.size / (1024 * 1024);
+            if (fileSizeMB > MAX_SIZE_MB) {
+                toast.error(`File size exceeds ${MAX_SIZE_MB}MB: ${file.name}`);
+                return;
+            }
+        }
+        if (selectedFiles.length + uploadedUrls.length + files.length > MAX_IMAGES) {
+            toast.error(`You can only upload ${MAX_IMAGES} images.`, { autoClose: 2000 });
+            return;
+        };
+        const newSelectedFiles = files.map(file => ({
+            file, // Lưu đối tượng file thực tế
+            url: URL.createObjectURL(file) // Tạo URL tạm thời để hiển thị (không dùng để upload)
+        }));
+
+        setSelectedFiles((prevFiles) => [...prevFiles, ...newSelectedFiles]);
+    };
+
+    // Handle delete confirmation
+    const openDeleteDialog = (imageUrl) => {
+        setImageToDelete(imageUrl);
+        setDeleteDialogOpen(true);
+    };
+
+    // Confirm delete image
+    const handleConfirmDelete = async () => {
+        if (uploadedUrls.includes(imageToDelete)) {
+            // If the image is already uploaded to Firebase and DB
+            try {
+                await DeleteImageFromFirebase(imageToDelete);
+                await DeleteBookImageByIdApi(Object.keys(uploadedUrlsMap).find(key => uploadedUrlsMap[key] === imageToDelete));
+                setUploadedUrls(uploadedUrls.filter(url => url !== imageToDelete));
+                console.log('Image deleted from Firebase:', imageToDelete);
+            } catch (err) {
+                console.error(err.message);
+            }
+        } else {
+            // If the image is still in selectedFiles (not yet uploaded)
+            setSelectedFiles(selectedFiles.filter(fileObj => fileObj.url !== imageToDelete));
+            console.log('Image deleted from selected files:', imageToDelete);
+        }
+
+        setDeleteDialogOpen(false);
+        setImageToDelete(null);
+    };
+
+    const handleUploadImage = async (selectedFiles) => {
+        try {
+            const fileUpload = selectedFiles.map(fileObj => fileObj.file);
+            const urls = await UploadImagesToFirebase(fileUpload);
+            setUploadedUrls(prevUrls => [...prevUrls, ...urls]);
+            setSelectedFiles([]);
+            return urls;
+        } catch (err) {
+            console.error(err.message);
+            return [];
+        }
+
     }
 
     setDeleteDialogOpen(false);
