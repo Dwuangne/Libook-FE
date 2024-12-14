@@ -6,6 +6,7 @@ const initialState = {
     username: localStorage.getItem("username") || "User",
     avatarUrl: localStorage.getItem("avatarUrl") || "",
     role: localStorage.getItem("role") || "",
+    userId: localStorage.getItem("userId") || "",
   },
 };
 
@@ -22,10 +23,11 @@ const authSlice = createSlice({
       localStorage.setItem("username", action.payload.username);
       localStorage.setItem("avatarUrl", action.payload.avatarUrl);
       localStorage.setItem("role", action.payload.role);
+      localStorage.setItem("userId", action.payload.userId);
     },
     logout(state) {
       state.isLoggedIn = false;
-      state.user = { username: "User", avatarUrl: "", role: "" };
+      state.user = { username: "User", avatarUrl: "", role: "", userId: "" };
 
       // Xóa localStorage
       localStorage.clear();
