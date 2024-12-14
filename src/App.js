@@ -15,7 +15,8 @@ import BookDetails from "./components/general/BookDetails";
 import Cart from "./components/general/Cart";
 
 //customer
-import Checkout from "./components/general/Checkout";
+import Checkout from "./components/general/MakeOrder/Checkout";
+import Payment from "./components/general/Payment";
 
 //admin
 import AdminLayout from "./components/admin/AdminLayout";
@@ -59,6 +60,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRole="Customer" />}>
           {/* Customer routes here */}
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
         </Route>
 
         {/* Admin Protected Routes */}

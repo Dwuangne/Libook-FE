@@ -63,6 +63,9 @@ const Login = () => {
       .then((res) => {
         const accessToken = res?.data?.data?.jwtToken;
         const decodedToken = jwtDecode(accessToken);
+        console.log(">>>>> accessToken: ", accessToken);
+        console.log(">>>>> decodedToken: ", decodedToken);
+        console.log(">>>>> id", decodedToken.id);
 
         // Dispatch Redux action để cập nhật trạng thái đăng nhập
         dispatch(
@@ -75,6 +78,7 @@ const Login = () => {
             role: decodedToken[
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
             ],
+            userId: decodedToken.id,
           })
         );
 
@@ -106,6 +110,7 @@ const Login = () => {
             role: decodedToken[
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
             ],
+            useId: decodedToken["id"],
           })
         );
 

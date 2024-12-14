@@ -135,7 +135,9 @@ const Cart = () => {
       return;
     }
     const totalAmount = calculateTotalAfterDiscount();
-    navigate("/checkout", { state: { selectedBooks, totalAmount } });
+    navigate("/checkout", {
+      state: { selectedBooks, totalAmount, selectedVoucher },
+    });
   };
 
   useEffect(() => {

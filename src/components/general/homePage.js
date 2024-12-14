@@ -36,8 +36,6 @@ const HomePage = () => {
         const categories = categoryRes?.data?.data || [];
         const validCategories = [];
         const booksByCategory = {};
-        console.log(">>>> Categories fetched:", categoryRes);
-        console.log(">>>> Category data: ", categories);
 
         for (const category of categories) {
           const bookRes = await GetAllBooksApi({
